@@ -38,7 +38,7 @@ class Recording_Camera:
         
         # Attention: Remember to initialize camera before use in your main code. And Remember to initialize camera after reset the world!!
 
-    def initialize(self, depth_enable:bool=False, segment_pc_enable:bool=False, segment_prim_path_list=None):
+    def initialize(self, depth_enable:bool=False, segment_pc_enable:bool=False, camera_params_enable:bool=False, segment_prim_path_list=None):
         
         self.video_frame = []
         self.camera.initialize()
@@ -47,6 +47,10 @@ class Recording_Camera:
         if depth_enable:
             self.camera.add_distance_to_image_plane_to_frame()
         
+        # render_product is needed for some annotators
+        if segment_pc_enable or camera_params_enable:
+            self.render_product = rep.create.render_product(self.camera_prim_path, self.resolution)
+
         # choose whether add pointcloud attribute or not 
         if segment_pc_enable:
             for path in segment_prim_path_list:
@@ -57,11 +61,14 @@ class Recording_Camera:
                 print(prim_path)
                 rep.modify.semantics([(semantic_type, semantic_label)], prim_path)
             
-            self.render_product = rep.create.render_product(self.camera_prim_path, [640, 480])
             self.annotator = rep.AnnotatorRegistry.get_annotator("pointcloud")
             self.annotator.attach(self.render_product)
             # self.annotator_semantic = rep.AnnotatorRegistry.get_annotator("semantic_segmentation")
             # self.annotator_semantic.attach(self.render_product)
+
+        if camera_params_enable:
+            self.camera_params_annotator = rep.AnnotatorRegistry.get_annotator("camera_params")
+            self.camera_params_annotator.attach(self.render_product)
 
         
     def get_rgb_graph(self, save_or_not:bool=False, save_path:str=get_unique_filename(base_filename=f"./image",extension=".png")):
@@ -76,7 +83,37 @@ class Recording_Camera:
             imageio.imwrite(save_path, data)
             cprint(f"RGB image has been save into {save_path}", "green", "on_green")
         return data
-    
+
+    def get_rgbd_graph(self, save_or_not:bool=False, save_path:str=get_unique_filename(base_filename=f"./image",extension=".png")):
+        '''
+        get RGBD graph data from recording_camera, save it to be image file(optional).
+        Args:
+            save_or_not(bool): save or not
+            save_path(str): The path you wanna save, remember to add file name and file type(suffix).
+        '''
+        rgb = self.camera.get_rgb()
+        depth = self.camera.get_depth()
+
+        depth = np.expand_dims(depth, axis=-1)
+
+        data = np.concatenate((rgb, depth), axis=-1)
+
+        if save_or_not:
+            # 只保存RGB图像，因为深度图需要特殊处理
+            imageio.imwrite(save_path, rgb)
+            cprint(f"RGB image has been save into {save_path}", "green", "on_green")
+        return data
+        
+    def get_camera_matrices(self):
+        if hasattr(self, 'camera_params_annotator') and self.camera_params_annotator is not None:
+            data = self.camera_params_annotator.get_data()
+            if data is not None and "cameraViewTransform" in data and "cameraProjection" in data:
+                view_matrix = data["cameraViewTransform"].reshape(4, 4)
+                projection_matrix = data["cameraProjection"].reshape(4, 4)
+                return view_matrix, projection_matrix
+        cprint("camera_params_annotator not initialized or data not available", "red")
+        return None, None
+
     def get_point_cloud_data_from_segment(
         self, 
         save_or_not:bool=True, 

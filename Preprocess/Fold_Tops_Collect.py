@@ -1,5 +1,5 @@
 from isaacsim import SimulationApp
-simulation_app = SimulationApp({"headless": False})
+simulation_app = SimulationApp({"headless": True})
 
 # load external package
 import os
@@ -92,7 +92,7 @@ class FoldTops_Env(BaseEnv):
 
         # load camera
         self.garment_camera = Recording_Camera(
-            camera_position=np.array([0.0, 1.0, 6.75]), 
+            camera_position=np.array([0.0, 0.8, 6]), 
             camera_orientation=np.array([0, 90.0, 90.0]),
             prim_path="/World/garment_camera",
         )
@@ -151,7 +151,7 @@ class FoldTops_Env(BaseEnv):
     
     def record_callback(self, step_size):
 
-        if self.step_num % 5 == 0:
+        if self.step_num % 15 == 0:
         
             joint_pos_L = self.bimanual_dex.dexleft.get_joint_positions()
             
@@ -174,10 +174,12 @@ class FoldTops_Env(BaseEnv):
                 "points_affordance_feature": self.points_affordance_feature,
             })
 
-            # # Preview data in order
-            # import cv2
-            # cv2.imshow("rgb", cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
-            # cv2.waitKey(1)
+            print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=")
+
+            # Preview RGB image using HeadlessVisualizer
+            from visualization_utils import HeadlessVisualizer
+            visualizer = HeadlessVisualizer("visualization_output")
+            visualizer.save_rgb_image(rgb, self.step_num, "RGB Preview")
             # o3d.visualization.draw_geometries([point_cloud])
             
             # pcd = o3d.geometry.PointCloud()
@@ -201,23 +203,56 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     )
     for i in range(50):
         env.step()
-        
+    
+    rgb = env.garment_camera.get_rgb_graph(save_or_not=False
+                                           ,save_path=get_unique_filename("data", extension=".png"))
+    # print(rgb.shape) # (480, 640, 3)
+    
     pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
-        save_or_not=True,
+        save_or_not=False,
         save_path=get_unique_filename("data", extension=".ply"),
         real_time_watch=False,
     )
     env.garment_pcd=pcd
     
     # unhide
-    set_prim_visible_group(
-        prim_path_list=["/World/DexLeft", "/World/DexRight"],
-        visible=True,
-    )
+    # set_prim_visible_group(
+    #     prim_path_list=["/World/DexLeft", "/World/DexRight"],
+    #     visible=True,
+    # )
     for i in range(50):
         env.step()
     
-    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422]) # [左袖口，右领口，右袖口，左领口，左下，右下]
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422, 1228, 824, 1364]) # [左袖口，右领口，右袖口，左领口，左下，右下]
+    
+    # # print("*****************************************************")
+
+    # # Visualize points with similarity > 0.9 in red
+    # pcd_vis = o3d.geometry.PointCloud()
+    # pcd_vis.points = o3d.utility.Vector3dVector(env.garment_pcd)
+    
+    # # Create colors array (default blue)
+    # colors = np.zeros((len(env.garment_pcd), 3))
+    # colors[:, 2] = 1.0  # Set all points to blue initially
+    
+    # # Set points with similarity > 0.9 to red
+    # # for i in range(len(points_similarity)):
+    # #     high_similarity_mask = points_similarity[i] > 0.8
+    # #     colors[high_similarity_mask] = [1.0, 0.0, 0.0]  # Red color
+    # #     print(f"Found {np.sum(high_similarity_mask)} points with similarity > 0.9")
+
+    # # Set points near manipulation points to red
+    # threshold = 0.05  # 5cm threshold
+    # for mp in manipulation_points:
+    #     distances = np.linalg.norm(env.garment_pcd - mp, axis=1)
+    #     nearby_mask = distances < threshold
+    #     colors[nearby_mask] = [1.0, 0.0, 0.0]  # Red color
+    
+    
+    # pcd_vis.colors = o3d.utility.Vector3dVector(colors)
+    # o3d.visualization.draw_geometries([pcd_vis])
+
+    # # print("*****************************************************")
 
     manipulation_points[0:4, 2] = 0.02
     manipulation_points[4:, 2] = 0.0
@@ -408,21 +443,23 @@ if __name__=="__main__":
         pos = np.array([x,y,0.0])
         ori = np.array([0.0, 0.0, 0.0])
         Base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        assets_lists = os.path.join(Base_dir,"Model_HALO/GAM/checkpoints/Tops_LongSleeve/assets_training_list.txt")
+        assets_lists = os.path.join(Base_dir,"Model_HALO/GAM/checkpoints/Tops_LongSleeve/assets_list.txt")
         assets_list = []
         with open(assets_lists,"r",encoding='utf-8') as f:
             for line in f:
                 clean_line = line.rstrip('\n')
                 assets_list.append(clean_line)
         usd_path=np.random.choice(assets_list)
+        print(usd_path)
     
     FoldTops(pos, ori, usd_path, args.ground_material_usd, args.data_collection_flag, args.record_vedio_flag)
 
-    if args.data_collection_flag:
-        simulation_app.close()
-    else:
-        while simulation_app.is_running():
-            simulation_app.update()
+    simulation_app.close()
+
+    # if args.data_collection_flag:
+    #     simulation_app.close()
+    # else:
+    #     while simulation_app.is_running():
+    #         simulation_app.update()
     
-simulation_app.close()
 

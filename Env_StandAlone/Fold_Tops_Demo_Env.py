@@ -173,16 +173,6 @@ class FoldTops_Env(BaseEnv):
                 "garment_point_cloud":self.garment_pcd,
                 "points_affordance_feature": self.points_affordance_feature,
             })
-
-            # # Preview data in order
-            # import cv2
-            # cv2.imshow("rgb", cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
-            # cv2.waitKey(1)
-            # o3d.visualization.draw_geometries([point_cloud])
-            
-            # pcd = o3d.geometry.PointCloud()
-            # pcd.points = o3d.utility.Vector3dVector(self.garment_pcd)
-            # o3d.visualization.draw_geometries([pcd])
         
         self.step_num += 1
 
@@ -203,7 +193,7 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
         env.step()
         
     pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
-        save_or_not=True,
+        save_or_not=False,
         save_path=get_unique_filename("data", extension=".ply"),
         real_time_watch=False,
     )
@@ -217,7 +207,7 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     for i in range(50):
         env.step()
     
-    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422]) # [左袖口，右领口，右袖口，左领口，左下，右下]
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422, 1124, 1425]) # [左袖口，右领口，右袖口，左领口，左下，右下]
 
     manipulation_points[0:4, 2] = 0.02
     manipulation_points[4:, 2] = 0.0
@@ -243,7 +233,7 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
 
     env.bimanual_dex.dexleft.dense_step_action(target_pos=lift_point_1, target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
     
-    lift_point_2 = np.array([manipulation_points[1][0], manipulation_points[1][1], left_sleeve_height])
+    lift_point_2 = np.array([manipulation_points[7][0], manipulation_points[7][1], left_sleeve_height])
     
     env.bimanual_dex.dexleft.dense_step_action(target_pos=lift_point_2, target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
 
@@ -263,6 +253,17 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
 
     
     # --------------------- right hand --------------------- #
+    pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
+        save_or_not=False,
+        save_path=get_unique_filename("data", extension=".ply"),
+        real_time_watch=False,
+    )
+    env.garment_pcd=pcd
+
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422, 1124, 1425]) # [左袖口，右领口，右袖口，左领口，左下，右下]
+
+    manipulation_points[0:4, 2] = 0.02
+    manipulation_points[4:, 2] = 0.0
 
     env.points_affordance_feature = normalize_columns(np.concatenate([points_similarity[2:3], points_similarity[2:3]], axis=0).T)
             
@@ -280,10 +281,12 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     # print("right_sleeve_height: ", right_sleeve_height)
     
     lift_point_1 = np.array([manipulation_points[2][0], manipulation_points[2][1], right_sleeve_height])
+
+    lift_point_1_backup = lift_point_1
     
     env.bimanual_dex.dexright.dense_step_action(target_pos=lift_point_1, target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
     
-    lift_point_2 = np.array([manipulation_points[3][0], manipulation_points[3][1], right_sleeve_height])
+    lift_point_2 = np.array([manipulation_points[6][0], manipulation_points[6][1], right_sleeve_height])
     
     env.bimanual_dex.dexright.dense_step_action(target_pos=lift_point_2, target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
 
@@ -300,11 +303,19 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     
     
     env.bimanual_dex.dexright.dense_step_action(target_pos=np.array([0.6, 0.8, 0.5]), target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
-
-    # env.garment_camera.get_rgb_graph(save_or_not=True,save_path=get_unique_filename("Data/garment_img",".png"))
-    # env.env_camera.get_rgb_graph(save_or_not=True,save_path=get_unique_filename("Data/env_img",".png"))
     
     # --------------------- bottom-top --------------------- #    
+    pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
+        save_or_not=False,
+        save_path=get_unique_filename("data", extension=".ply"),
+        real_time_watch=False,
+    )
+    env.garment_pcd=pcd
+
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422, 1124, 1425]) # [左袖口，右领口，右袖口，左领口，左下，右下]
+
+    manipulation_points[0:4, 2] = 0.02
+    manipulation_points[4:, 2] = 0.0
     
     env.points_affordance_feature = normalize_columns(points_similarity[4:6].T)   
    
@@ -355,6 +366,8 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     for i in range(100):
         env.step()
     env.garment.particle_material.set_gravity_scale(1.0)
+    
+    env.bimanual_dex.dexright.dense_step_action(target_pos=np.array([0.6, 0.8, 0.5]), target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
     
     dexleft_prim = prims_utils.get_prim_at_path("/World/DexLeft")
     dexright_prim = prims_utils.get_prim_at_path("/World/DexRight")
@@ -408,7 +421,7 @@ if __name__=="__main__":
         pos = np.array([x,y,0.0])
         ori = np.array([0.0, 0.0, 0.0])
         Base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        assets_lists = os.path.join(Base_dir,"Model_HALO/GAM/checkpoints/Tops_LongSleeve/assets_training_list.txt")
+        assets_lists = os.path.join(Base_dir,"Model_HALO/GAM/checkpoints/Tops_LongSleeve/assets_list.txt")
         assets_list = []
         with open(assets_lists,"r",encoding='utf-8') as f:
             for line in f:

@@ -1,0 +1,10 @@
+Assets/Material/Floor/Fabric001.usd
+Assets/Material/Floor/Fabric002.usd
+Assets/Material/Floor/Tiles001.usd
+Assets/Material/Floor/Tiles002.usd
+Assets/Material/Floor/Tiles003.usd
+Assets/Material/Floor/WoodFloor001.usd
+Assets/Material/Floor/WoodFloor002.usd
+Assets/Material/Floor/WoodFloor003.usd
+Assets/Material/Floor/WoodFloor004.usd
+Assets/Material/Floor/WoodFloor005.usd
