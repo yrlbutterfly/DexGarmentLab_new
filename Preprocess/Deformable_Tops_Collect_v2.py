@@ -395,14 +395,59 @@ def save_jsonl(env, pcd):
 
 def get_area_info(env, rgb, pcd, keypoints):
     manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=keypoints)
+    
+    # # Use distance-based clustering to find the largest cluster
+    # # Calculate pairwise distances between all points
+    # n_points = len(manipulation_points)
+    # distance_matrix = np.zeros((n_points, n_points))
+    
+    # for i in range(n_points):
+    #     for j in range(i+1, n_points):
+    #         dist = np.linalg.norm(manipulation_points[i] - manipulation_points[j])
+    #         distance_matrix[i, j] = dist
+    #         distance_matrix[j, i] = dist
+    
+    # # Set threshold for clustering (you can adjust this value)
+    # threshold = np.percentile(distance_matrix[distance_matrix > 0], 25)  # Use 25th percentile of non-zero distances
+    
+    # # Find clusters using connected components
+    # clusters = []
+    # visited = [False] * n_points
+    
+    # for i in range(n_points):
+    #     if not visited[i]:
+    #         # Start a new cluster
+    #         cluster = [i]
+    #         visited[i] = True
+            
+    #         # Find all points connected to this point
+    #         stack = [i]
+    #         while stack:
+    #             current = stack.pop()
+    #             for j in range(n_points):
+    #                 if not visited[j] and distance_matrix[current, j] <= threshold:
+    #                     cluster.append(j)
+    #                     visited[j] = True
+    #                     stack.append(j)
+            
+    #         clusters.append(cluster)
+    
+    # # Select the largest cluster
+    # if clusters:
+    #     largest_cluster_idx = max(range(len(clusters)), key=lambda i: len(clusters[i]))
+    #     largest_cluster = clusters[largest_cluster_idx]
+        
+    #     # If the largest cluster has at least 3 points, use it
+    #     if len(largest_cluster) >= 3:
+    #         manipulation_points = manipulation_points[largest_cluster]
+    #         print(f"Selected cluster with {len(largest_cluster)} points from {n_points} total points")
+    #     else:
+    #         print(f"Largest cluster too small ({len(largest_cluster)} points), using all {n_points} points")
+    # else:
+    #     print(f"No clusters found, using all {n_points} points")
+    
+    # Now calculate centroid of the selected points
     centroid = np.mean(manipulation_points, axis=0)
-
-    # Calculate distances to centroid and get closest 90% points
-    distances = np.linalg.norm(manipulation_points - centroid, axis=1)
-    threshold = np.percentile(distances, 50)
-    closest_points = manipulation_points[distances <= threshold]
-
-    centroid = np.mean(closest_points, axis=0) #### once again, get the centroid of the closest 90% points
 
     centroid = get_rgb_index(env, rgb, centroid)
 
@@ -410,7 +455,7 @@ def get_area_info(env, rgb, pcd, keypoints):
     min_x, min_y = float('inf'), float('inf')
     max_x, max_y = float('-inf'), float('-inf')
 
-    for point in closest_points:
+    for point in manipulation_points:
         pixel_x, pixel_y = get_rgb_index(env, rgb, point)
         if pixel_x is not None and pixel_y is not None:
             min_x = min(min_x, pixel_x)

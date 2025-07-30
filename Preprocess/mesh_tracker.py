@@ -38,6 +38,7 @@ from Env_Config.Utils_Project.Parse import parse_args_record
 from Env_Config.Utils_Project.Position_Judge import judge_pcd
 from Env_Config.Room.Object_Tools import set_prim_visible_group, delete_prim_group
 from Model_HALO.GAM.GAM_Encapsulation import GAM_Encapsulation
+from Env_Config.Utils_Project.Point_Cloud_Manip import furthest_point_sampling
 
 class FoldTops_Env(BaseEnv):
     def __init__(
@@ -197,7 +198,18 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
         save_path=get_unique_filename("data", extension=".ply"),
         real_time_watch=False,
     )
+
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print(pcd.shape)
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
     env.garment_pcd=pcd
+
+    garment_pcd = o3d.geometry.PointCloud()
+    garment_pcd.points = o3d.utility.Vector3dVector(pcd)
+    
+    # Save to PLY file
+    o3d.io.write_point_cloud("garment_vertices_camera.ply", garment_pcd)
     
     # unhide
     set_prim_visible_group(
@@ -206,24 +218,55 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     )
     for i in range(50):
         env.step()
+
+    scale:np.ndarray=np.array([0.0085, 0.0085, 0.0085])
+    garment_vertices = env.garment.get_vertice_positions()
+    garment_vertices = garment_vertices * scale
+    garment_vertices += env.garment.get_garment_center_pos()
     
-    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[1902])
+    # Assign colors to point cloud
+    garment_pcd = o3d.geometry.PointCloud()
+    # Create point cloud from vertices
+    garment_pcd.points = o3d.utility.Vector3dVector(garment_vertices)
+
+    garment_pcd.paint_uniform_color([0.8, 0.8, 0.8])  # Set base color to light gray
+    # Color the manipulation points red
+    colors = np.asarray(garment_pcd.colors)
+    right_indices = [897, 898, 899, 900, 901, 902, 903, 904, 905, 906, 969, 970, 971 ,972, 973, 974, 975, 998, 999, 1000, 1111, 1112, 1117, 1118, 1503, 5631, 5632, 5633, 5654, 5655, 5656, 5657, 5658, 5659, 5660, 5661, 5662, 5685, 5709, 5712, 5713, 5755, 5756, 5757, 5758, 5759, 5760, 5761, 5762, 5763, 5764, 5828, 5829, 5830, 5832, 5835, 5836, 5838, 5906, 5907, 5908, 5910]
+    left_indices = [57, 58, 59, 60, 61, 62, 63, 64, 65, 126, 128, 133, 134, 135, 153, 154, 193, 194, 195, 4804, 4805, 4806, 4826, 4827, 4828, 4829, 4830, 4831, 4832, 4833, 4834, 4835, 4859, 4860, 4861, 4862, 4865, 4881, 4882, 4884, 4890, 4912, 4918, 4919, 4831, 4932, 4933, 4955, 4983, 4984, 4985, 5066, 5157, 5213, 5215]
+    colors[right_indices] = [1, 0, 0]  # Red color for highlighted points
+    colors[left_indices] = [0, 0, 1]  # Blue color for highlighted points
+    garment_pcd.colors = o3d.utility.Vector3dVector(colors)
+
+    # Save to PLY file
+    o3d.io.write_point_cloud("garment_vertices.ply", garment_pcd)
+    
+    # Visualize the point cloud
+    o3d.visualization.draw_geometries([garment_pcd])
+
+    garment_pcd, colors, garment_indices = furthest_point_sampling(garment_vertices, colors, 2048, indices=True)
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print(garment_indices.shape)
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=garment_pcd, index_list=[957, 501, 1902, 448, 1196, 422])
 
     manipulation_points[0:4, 2] = 0.02
     manipulation_points[4:, 2] = 0.0
 
-    # visualize manipulation points
+    # Create point cloud visualization
     pcd_vis = o3d.geometry.PointCloud()
-    pcd_vis.points = o3d.utility.Vector3dVector(pcd)
-    pcd_vis.paint_uniform_color([0.8, 0.8, 0.8])
+    pcd_vis.points = o3d.utility.Vector3dVector(garment_pcd)
+    pcd_vis.paint_uniform_color([0.8, 0.8, 0.8])  # Set base color to light gray
     
+    # Color the manipulation points red
     colors = np.asarray(pcd_vis.colors)
     for idx in indices:
-        colors[idx] = [1, 0, 0]
+        colors[idx] = [1, 0, 0]  # Red color for manipulation points
     pcd_vis.colors = o3d.utility.Vector3dVector(colors)
     
+    # Show point cloud with colored manipulation points
     o3d.visualization.draw_geometries([pcd_vis])
-    
     
     # ---------------------- left hand ---------------------- #
     
@@ -264,7 +307,29 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     
     env.bimanual_dex.dexleft.dense_step_action(target_pos=np.array([-0.6, 0.8, 0.5]), target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
 
+    garment_vertices = env.garment.get_vertice_positions()
+    garment_vertices = garment_vertices * scale
+    garment_vertices += env.garment.get_garment_center_pos()
+
     
+    # Assign colors to point cloud
+    garment_pcd = o3d.geometry.PointCloud()
+    # Create point cloud from vertices
+    garment_pcd.points = o3d.utility.Vector3dVector(garment_vertices)
+
+    garment_pcd.paint_uniform_color([0.8, 0.8, 0.8])  # Set base color to light gray
+    # Color the manipulation points red
+    colors = np.asarray(garment_pcd.colors)
+    colors[right_indices] = [1, 0, 0]  # Red color for highlighted points
+    colors[left_indices] = [0, 0, 1]
+    garment_pcd.colors = o3d.utility.Vector3dVector(colors)
+    
+    # Save to PLY file
+    o3d.io.write_point_cloud("garment_vertices_right.ply", garment_pcd)
+    
+    # Visualize the point cloud
+    o3d.visualization.draw_geometries([garment_pcd])
+
     # --------------------- right hand --------------------- #
 
     env.points_affordance_feature = normalize_columns(np.concatenate([points_similarity[2:3], points_similarity[2:3]], axis=0).T)
@@ -303,6 +368,28 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     
     
     env.bimanual_dex.dexright.dense_step_action(target_pos=np.array([0.6, 0.8, 0.5]), target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
+    
+    garment_vertices = env.garment.get_vertice_positions()
+    garment_vertices = garment_vertices * scale
+    garment_vertices += env.garment.get_garment_center_pos()
+    
+    # Assign colors to point cloud
+    garment_pcd = o3d.geometry.PointCloud()
+    # Create point cloud from vertices
+    garment_pcd.points = o3d.utility.Vector3dVector(garment_vertices)
+
+    garment_pcd.paint_uniform_color([0.8, 0.8, 0.8])  # Set base color to light gray
+    # Color the manipulation points red
+    colors = np.asarray(garment_pcd.colors)
+    colors[right_indices] = [1, 0, 0]  # Red color for highlighted points
+    colors[left_indices] = [0, 0, 1]
+    garment_pcd.colors = o3d.utility.Vector3dVector(colors)
+    
+    # Save to PLY file
+    o3d.io.write_point_cloud("garment_vertices_left.ply", garment_pcd)
+    
+    # Visualize the point cloud
+    o3d.visualization.draw_geometries([garment_pcd])
     
     # --------------------- bottom-top --------------------- #    
     
@@ -360,6 +447,28 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     dexright_prim = prims_utils.get_prim_at_path("/World/DexRight")
     set_prim_visibility(dexleft_prim, False)
     set_prim_visibility(dexright_prim, False)
+
+
+    garment_vertices = env.garment.get_vertice_positions()
+    garment_vertices = garment_vertices * scale
+    garment_vertices += env.garment.get_garment_center_pos()
+    
+    # Create point cloud from vertices
+    garment_pcd = o3d.geometry.PointCloud()
+    garment_pcd.points = o3d.utility.Vector3dVector(garment_vertices)
+
+    garment_pcd.paint_uniform_color([0.8, 0.8, 0.8])  # Set base color to light gray
+    # Color the manipulation points red
+    colors = np.asarray(garment_pcd.colors)
+    colors[right_indices] = [1, 0, 0]  # Red color for highlighted points
+    colors[left_indices] = [0, 0, 1]
+    garment_pcd.colors = o3d.utility.Vector3dVector(colors)
+
+    # Save to PLY file
+    o3d.io.write_point_cloud("garment_vertices_bottom.ply", garment_pcd)
+    
+    # Visualize the point cloud
+    o3d.visualization.draw_geometries([garment_pcd])
     
     for i in range(50):
         env.step()   
@@ -398,7 +507,7 @@ if __name__=="__main__":
     
     # initial setting
     pos = np.array([0.0, 0.8, 0.2])
-    ori = np.array([0.0, 0.0, 90.0])
+    ori = np.array([0.0, 0.0, 0.0])
     usd_path = None
     
     if args.garment_random_flag:

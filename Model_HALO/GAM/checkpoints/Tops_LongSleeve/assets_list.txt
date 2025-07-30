@@ -32,7 +32,6 @@ Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket063/TCLC_Jacket063_obj.
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Normal_Model_058/TCLC_Normal_Model_058_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket124/TCLC_Jacket124_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_jacket096/TCLC_jacket096_obj.usd
-Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top10/TCLC_top10_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top415/TCLC_Top415_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Shirt018/TCLC_Shirt018_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_081/TCLC_model2_081_obj.usd
@@ -82,7 +81,6 @@ Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_jacket094/TCLC_jacket094_obj.
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top530/TCLC_Top530_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top117/TCLC_top117_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top584/TCLC_Top584_obj.usd
-Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Tutle_Neck/TCLC_Tutle_Neck_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket146/TCLC_Jacket146_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_028/TCLC_028_obj.usd
 Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Suit008/TCLC_Suit008_obj.usd
@@ -149,7 +147,6 @@ Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top441/TNLC_Top441_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top504/TNLC_Top504_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top516/TNLC_Top516_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_022/TNLC_Normal_Model_022_obj.usd
-Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_T_Shirt_Long_Sleeve_V_Neck/TNLC_T_Shirt_Long_Sleeve_V_Neck_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top644/TNLC_Top644_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_056/TNLC_model2_056_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top487/TNLC_Top487_obj.usd
@@ -160,14 +157,11 @@ Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top619/TNLC_Top619_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_049/TNLC_Normal_Model_049_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top412/TNLC_Top412_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket025/TNLC_Jacket025_obj.usd
-Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top319/TNLC_Top319_obj.usd
-Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_top9/TNLC_top9_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top074/TNLC_Top074_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top580/TNLC_Top580_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket001_0/TNLC_Jacket001_0_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top550/TNLC_Top550_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top496/TNLC_Top496_obj.usd
-Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Fleece/TNLC_Fleece_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top314/TNLC_Top314_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Sweater008/TNLC_Sweater008_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket090/TNLC_Jacket090_obj.usd
@@ -201,7 +195,6 @@ Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jumper002/TNLC_Jumper002_ob
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_034/TNLC_Normal_Model_034_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top158/TNLC_Top158_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_099/TNLC_099_obj.usd
-Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_top8/TNLC_top8_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_008/TNLC_model2_008_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket010/TNLC_Jacket010_obj.usd
 Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_top520/TNLC_top520_obj.usd

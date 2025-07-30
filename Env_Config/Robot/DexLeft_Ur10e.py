@@ -364,4 +364,234 @@ class DexLeft_Ur10e(Robot):
         actions = self.articulation_rmpflow.get_next_articulation_action()
         # apply actions
         self._articulation_controller.apply_action(actions)
+
+    def move_curobo(self, target_pos:np.ndarray, target_ori:np.ndarray=None, angular_type:str="quat", degree=True):
+        """
+        Plan and execute a *collision-free* single-arm motion with cuRobo.
+        Only uses cuRobo for motion planning, no fallback to other methods.
+        
+        Parameters
+        ----------
+        target_pos : (3,) array_like
+            Desired **finger-tip** position in world coordinates.
+        target_ori : (4,) or (3,) array_like
+            Desired orientation.  Quaternion if ``angular_type='quat'`` otherwise
+            Euler angles in degrees/radians (see ``angular_type`` & ``degree``).
+        angular_type : str
+            Type of orientation representation ('quat' or 'euler').
+        degree : bool
+            If True, euler angles are in degrees, otherwise radians.
+        """
+        try:
+            # Import cuRobo components
+            from curobo.types.base import TensorDeviceType
+            from curobo.types.math import Pose
+            from curobo.types.robot import JointState
+            from curobo.wrap.reacher.motion_gen import (
+                MotionGen,
+                MotionGenConfig,
+                MotionGenPlanConfig,
+            )
+            from curobo.util_file import get_robot_configs_path, join_path, load_yaml
+            from curobo.geom.sdf.world import CollisionCheckerType
+            from curobo.geom.types import WorldConfig
+            from curobo.util.logger import setup_curobo_logger
+            
+            # Setup cuRobo logger
+            setup_curobo_logger("warn")
+            
+            # Setup tensor device
+            tensor_args = TensorDeviceType()
+            
+            # Load robot configuration for ur10e_shadow_left_hand_glb
+            robot_cfg_path = get_robot_configs_path()
+            robot_cfg = load_yaml(join_path(robot_cfg_path, "ur10e.yml"))["robot_cfg"]
+            
+            # Modify configuration for ur10e_shadow_left_hand_glb
+            # Only use the first 6 joints (arm joints) for planning
+            robot_cfg["kinematics"]["cspace"]["joint_names"] = [
+                "shoulder_pan_joint", 
+                "shoulder_lift_joint", 
+                "elbow_joint",
+                "wrist_1_joint", 
+                "wrist_2_joint", 
+                "wrist_3_joint"
+            ]
+            
+            # Set default configuration for arm joints only
+            robot_cfg["kinematics"]["cspace"]["retract_config"] = [-1.57, -1.84, -2.5, -1.89, -1.57, 0.0]
+            
+            # Create a simple world configuration (no obstacles for now)
+            world_cfg = WorldConfig()
+            
+            # Motion generation configuration
+            motion_gen_config = MotionGenConfig.load_from_robot_config(
+                robot_cfg,
+                world_cfg,
+                tensor_args,
+                collision_checker_type=CollisionCheckerType.MESH,
+                num_trajopt_seeds=12,
+                num_graph_seeds=12,
+                interpolation_dt=0.02,  # 减小插值时间步长，让轨迹更密集
+                collision_cache={"obb": 30, "mesh": 100},
+                optimize_dt=True,
+                trajopt_dt=None,
+                trajopt_tsteps=64,  # 增加轨迹优化时间步数
+                trim_steps=None,
+            )
+            
+            # Create motion generator
+            motion_gen = MotionGen(motion_gen_config)
+            
+            # Warmup motion generator
+            print("Warming up cuRobo...")
+            motion_gen.warmup(enable_graph=True, warmup_js_trajopt=False)
+            print("cuRobo is ready!")
+            
+            # Get current joint state from Isaac Sim
+            sim_js = self.get_joints_state()
+            if sim_js is None:
+                print("Failed to get joint state")
+                return False
+            
+            # Only use the first 6 joints (arm joints) for planning
+            arm_positions = sim_js.positions[:6]
+            arm_velocities = sim_js.velocities[:6]
+            arm_names = self.dof_names[:6]
+            
+            # Create cuRobo joint state for arm only
+            cu_js = JointState(
+                position=tensor_args.to_device(arm_positions),
+                velocity=tensor_args.to_device(arm_velocities) * 0.0,
+                acceleration=tensor_args.to_device(arm_velocities) * 0.0,
+                jerk=tensor_args.to_device(arm_velocities) * 0.0,
+                joint_names=arm_names,
+            )
+            
+            # Get ordered joint state
+            cu_js = cu_js.get_ordered_joint_state(motion_gen.kinematics.joint_names)
+            
+            # Convert orientation if needed
+            if target_ori is None:
+                target_ori = np.array([1.0, 0.0, 0.0, 0.0])  # Default orientation
+            elif angular_type == "euler":
+                if degree:
+                    target_ori = np.radians(target_ori)
+                target_ori = euler_angles_to_quat(target_ori, degrees=False)
+            
+            # Store original target for debugging
+            original_target_pos = target_pos.copy()
+            original_target_ori = target_ori.copy()
+            
+            # Apply wrist offset like dense_step_action does
+            # The offset is from finger-tip to wrist
+            target_pos = target_pos + Rotation(target_ori, np.array([-0.37, -0.025, 0.025]))
+            target_ori_matrix = quat_to_rot_matrix(target_ori)
+            
+            # Get current robot base pose and orientation
+            base_pose, base_ori = self.get_world_pose()
+            base_ori_matrix = quat_to_rot_matrix(base_ori)
+            
+            # Transform target pose from world coordinates to robot base coordinates
+            # Use the same coordinate transformation as dense_step_action
+            pose_in_local, ori_in_local = get_pose_relat(target_pos, target_ori_matrix, base_pose, base_ori_matrix)
+            ori_in_local_quat = rot_matrix_to_quat(ori_in_local)
+            
+            # Debug: Print target positions
+            print(f"Original finger-tip target position: {original_target_pos}")
+            print(f"Original finger-tip target orientation: {original_target_ori}")
+            print(f"Wrist target position (after offset): {target_pos}")
+            print(f"Robot base position: {base_pose}")
+            print(f"Robot frame target position: {pose_in_local}")
+            print(f"Robot frame target orientation: {ori_in_local_quat}")
+            
+            # Create target pose in robot base frame
+            ik_goal = Pose(
+                position=tensor_args.to_device(pose_in_local),
+                quaternion=tensor_args.to_device(ori_in_local_quat),
+            )
+            
+            # Plan motion
+            plan_config = MotionGenPlanConfig(
+                enable_graph=False,
+                enable_graph_attempt=2,
+                max_attempts=4,
+                enable_finetune_trajopt=True,
+                time_dilation_factor=0.2,  # 减小时间缩放因子，让运动更慢
+            )
+            
+            result = motion_gen.plan_single(cu_js.unsqueeze(0), ik_goal, plan_config)
+            
+            if result.success.item():
+                print("cuRobo motion planning successful!")
+                
+                # Get interpolated plan
+                cmd_plan = result.get_interpolated_plan()
+                cmd_plan = motion_gen.get_full_js(cmd_plan)
+                
+                # Get joint indices for arm joints only
+                idx_list = []
+                common_js_names = []
+                for x in arm_names:
+                    if x in cmd_plan.joint_names:
+                        idx_list.append(self.get_dof_index(x))
+                        common_js_names.append(x)
+                
+                cmd_plan = cmd_plan.get_ordered_joint_state(common_js_names)
+                
+                # Execute trajectory
+                print("Executing trajectory...")
+                articulation_controller = self.get_articulation_controller()
+                
+                for cmd_idx in range(len(cmd_plan.position)):
+                    cmd_state = cmd_plan[cmd_idx]
+                    
+                    # Create full joint command (arm + hand)
+                    full_position = sim_js.positions.copy()  # Keep current hand positions
+                    full_velocity = sim_js.velocities.copy() * 0.0
+                    
+                    # Update arm positions with planned trajectory
+                    for i, idx in enumerate(idx_list):
+                        full_position[idx] = cmd_state.position[i].cpu().numpy()
+                        full_velocity[idx] = cmd_state.velocity[i].cpu().numpy()
+                    
+                    # Apply action
+                    from omni.isaac.core.utils.types import ArticulationAction
+                    art_action = ArticulationAction(
+                        full_position,
+                        full_velocity,
+                        joint_indices=list(range(len(full_position))),
+                    )
+                    
+                    articulation_controller.apply_action(art_action)
+                    
+                    # Step simulation
+                    for _ in range(2):
+                        self.world.step(render=False)
+                
+                print("cuRobo motion executed successfully.")
+                
+                # Debug: Check final end effector position and orientation
+                final_ee_pos, final_ee_ori = self.get_cur_ee_pos()
+                # Calculate finger-tip position from end effector position
+                # The offset from wrist to finger-tip is the opposite of the wrist offset
+                final_finger_tip_pos = final_ee_pos + Rotation(final_ee_ori, np.array([0.37, 0.025, -0.025]))
+                
+                print(f"\n=== Final Position Check ===")
+                print(f"Target finger-tip position: {original_target_pos}")
+                print(f"Final finger-tip position: {final_finger_tip_pos}")
+                print(f"Position error: {np.linalg.norm(original_target_pos - final_finger_tip_pos):.6f}")
+                print(f"Target finger-tip orientation: {original_target_ori}")
+                print(f"Final end effector orientation: {final_ee_ori}")
+                print(f"Final finger-tip orientation: {final_ee_ori}")  # Same as end effector for now
+                print(f"=== End Position Check ===\n")
+                
+                return True
+            else:
+                print(f"cuRobo planning failed: {result.status}")
+                return False
+                
+        except Exception as e:
+            print(f"cuRobo error: {e}")
+            return False
         

@@ -1,5 +1,5 @@
 from isaacsim import SimulationApp
-simulation_app = SimulationApp({"headless": False})
+simulation_app = SimulationApp({"headless": True})
 
 # load external package
 import os
@@ -419,11 +419,11 @@ def save_jsonl(env):
     # data["not_exist_point"] = None
 
     # 保存pcd
-    pcd_path = get_unique_filename("Preprocess/data/pcd/pcd", extension=".ply")
-    o3d_pcd = o3d.geometry.PointCloud()
-    o3d_pcd.points = o3d.utility.Vector3dVector(garment_vertices)
-    o3d.io.write_point_cloud(pcd_path, o3d_pcd)
-    data["pcd"] = pcd_path.split("/")[-1]
+    # pcd_path = get_unique_filename("Preprocess/data/pcd/pcd", extension=".ply")
+    # o3d_pcd = o3d.geometry.PointCloud()
+    # o3d_pcd.points = o3d.utility.Vector3dVector(garment_vertices)
+    # o3d.io.write_point_cloud(pcd_path, o3d_pcd)
+    # data["pcd"] = pcd_path.split("/")[-1]
 
     point, bbox = get_area_info(env, rgb, garment_vertices[env.left_cuff_indices], "left_cuff")
     data["left_cuff"] = {

@@ -4,7 +4,49 @@ import copy
 import matplotlib.pyplot as plt
 import open3d as o3d
 
-def furthest_point_sampling(points, colors=None, n_samples=2048):
+def get_surface_vertices(garment_vertices, pcd):
+    """
+    For each point in pcd, find the nearest available point in garment_vertices and return the corresponding vertices and indices.
+    Each garment vertex can only be selected once to maintain the same number of points.
+    
+    Args:
+        garment_vertices: np.ndarray, shape (M, 3) - Garment vertices coordinates
+        pcd: np.ndarray, shape (N, 3) - Point cloud coordinates
+    
+    Returns:
+        garment_vertices: np.ndarray, shape (N, 3) - Selected garment vertices (same number as pcd)
+        garment_indices: np.ndarray, shape (N,) - Indices of selected vertices in original garment_vertices
+    """
+    garment_vertices = np.asarray(garment_vertices)
+    pcd = np.asarray(pcd)
+    
+    N = pcd.shape[0]  # Number of points in pcd
+    M = garment_vertices.shape[0]  # Number of garment vertices
+    
+    # Track which garment vertices are already selected
+    available_vertices = np.ones(M, dtype=bool)  # True means available
+    selected_indices = np.zeros(N, dtype=int)
+    
+    # For each point in pcd, find the nearest available point in garment_vertices
+    for i, point in enumerate(pcd):
+        # Calculate distances to all available garment vertices
+        distances = np.linalg.norm(garment_vertices - point, axis=1)
+        
+        # Mask out already selected vertices by setting their distances to infinity
+        distances[~available_vertices] = np.inf
+        
+        # Find the index of the nearest available vertex
+        nearest_idx = np.argmin(distances)
+        selected_indices[i] = nearest_idx
+        
+        # Mark this vertex as no longer available
+        available_vertices[nearest_idx] = False
+    
+    # Return the corresponding vertices and indices
+    return garment_vertices[selected_indices], selected_indices
+
+
+def furthest_point_sampling(points, colors=None, n_samples=2048, indices=False):
     """
     points: [N, 3] tensor containing the whole point cloud
     n_samples: samples you want in the sampled point cloud typically &lt;&lt; N 
@@ -40,9 +82,15 @@ def furthest_point_sampling(points, colors=None, n_samples=2048):
         selected = torch.argmax(dists)  # Scalar
         sample_inds[i] = selected
     if colors is None:
-        return points[sample_inds].cpu().numpy()
+        if indices:
+            return points[sample_inds].cpu().numpy(), sample_inds
+        else:
+            return points[sample_inds].cpu().numpy()
     else:
-        return points[sample_inds].cpu().numpy(), colors[sample_inds].cpu().numpy()  # [S, 3]
+        if indices:
+            return points[sample_inds].cpu().numpy(), colors[sample_inds].cpu().numpy(), sample_inds
+        else:
+            return points[sample_inds].cpu().numpy(), colors[sample_inds].cpu().numpy()  # [S, 3]
 
 def normalize_pcd_points_xy(pcd_points, x_range=(-1, 1), y_range=(-1, 1)): 
     '''

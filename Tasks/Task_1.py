@@ -65,7 +65,7 @@ class FoldTops_Env(BaseEnv):
             self.world, 
             pos=np.array([0, 3.0, 0.6]),
             ori=np.array([0.0, 0.0, 0.0]),
-            usd_path=os.getcwd() + "/" + "Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_018/TCLC_018_obj.usd" if usd_path is None else usd_path,
+            usd_path="Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_018/TCLC_018_obj.usd" if usd_path is None else usd_path,
             contact_offset=0.012,             
             rest_offset=0.010,                
             particle_contact_offset=0.012,    
@@ -173,6 +173,16 @@ class FoldTops_Env(BaseEnv):
                 "garment_point_cloud":self.garment_pcd,
                 "points_affordance_feature": self.points_affordance_feature,
             })
+
+            # # Preview data in order
+            # import cv2
+            # cv2.imshow("rgb", cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+            # cv2.waitKey(1)
+            # o3d.visualization.draw_geometries([point_cloud])
+            
+            # pcd = o3d.geometry.PointCloud()
+            # pcd.points = o3d.utility.Vector3dVector(self.garment_pcd)
+            # o3d.visualization.draw_geometries([pcd])
         
         self.step_num += 1
 
@@ -193,7 +203,7 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
         env.step()
         
     pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
-        save_or_not=False,
+        save_or_not=True,
         save_path=get_unique_filename("data", extension=".ply"),
         real_time_watch=False,
     )
@@ -207,23 +217,10 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     for i in range(50):
         env.step()
     
-    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[1902])
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422]) # [左袖口，右领口，右袖口，左领口，左下，右下]
 
     manipulation_points[0:4, 2] = 0.02
     manipulation_points[4:, 2] = 0.0
-
-    # visualize manipulation points
-    pcd_vis = o3d.geometry.PointCloud()
-    pcd_vis.points = o3d.utility.Vector3dVector(pcd)
-    pcd_vis.paint_uniform_color([0.8, 0.8, 0.8])
-    
-    colors = np.asarray(pcd_vis.colors)
-    for idx in indices:
-        colors[idx] = [1, 0, 0]
-    pcd_vis.colors = o3d.utility.Vector3dVector(colors)
-    
-    o3d.visualization.draw_geometries([pcd_vis])
-    
     
     # ---------------------- left hand ---------------------- #
     
@@ -303,6 +300,9 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, data_collection_flag, reco
     
     
     env.bimanual_dex.dexright.dense_step_action(target_pos=np.array([0.6, 0.8, 0.5]), target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
+
+    # env.garment_camera.get_rgb_graph(save_or_not=True,save_path=get_unique_filename("Data/garment_img",".png"))
+    # env.env_camera.get_rgb_graph(save_or_not=True,save_path=get_unique_filename("Data/env_img",".png"))
     
     # --------------------- bottom-top --------------------- #    
     
@@ -398,7 +398,7 @@ if __name__=="__main__":
     
     # initial setting
     pos = np.array([0.0, 0.8, 0.2])
-    ori = np.array([0.0, 0.0, 90.0])
+    ori = np.array([0.0, 0.0, 0.0])
     usd_path = None
     
     if args.garment_random_flag:
@@ -414,7 +414,7 @@ if __name__=="__main__":
             for line in f:
                 clean_line = line.rstrip('\n')
                 assets_list.append(clean_line)
-        usd_path=os.getcwd() + "/" + np.random.choice(assets_list)
+        usd_path=np.random.choice(assets_list)
     
     FoldTops(pos, ori, usd_path, args.ground_material_usd, args.data_collection_flag, args.record_vedio_flag)
 
@@ -425,3 +425,4 @@ if __name__=="__main__":
             simulation_app.update()
     
 simulation_app.close()
+
