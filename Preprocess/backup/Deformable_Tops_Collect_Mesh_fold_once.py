@@ -243,17 +243,22 @@ def FoldTops(env):
     manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=env.right_waist)
     env.right_waist_indices = garment_indices[indices]
 
-    # save_jsonl(env)
+    save_jsonl(env)
     
-        # ---------------------- left hand ---------------------- #
+    # ---------------------- left hand ---------------------- #
     pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
         save_or_not=False,
         save_path=get_unique_filename("data", extension=".ply"),
         real_time_watch=False,
     )
 
-    source_pos = pcd[np.random.randint(0, len(pcd))]
-    target_pos = pcd[np.random.randint(0, len(pcd))]
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[957, 501, 1902, 448, 1196, 422, 1124, 1425])
+
+    # manipulation_points[0:4, 2] = 0.02
+    # manipulation_points[4:, 2] = 0.0
+
+    source_pos = manipulation_points[0]
+    target_pos = manipulation_points[7]
 
     env.bimanual_dex.dexleft.dense_step_action(target_pos=source_pos, target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
     
@@ -288,43 +293,6 @@ def FoldTops(env):
         real_time_watch=False,
     )
 
-    save_jsonl(env)
-
-    # --------------------- right hand --------------------- #
-    source_pos = pcd[np.random.randint(0, len(pcd))]
-    target_pos = pcd[np.random.randint(0, len(pcd))]
-            
-    env.bimanual_dex.dexright.dense_step_action(target_pos=source_pos, target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
-            
-    env.bimanual_dex.set_both_hand_state(left_hand_state="None", right_hand_state="close")
-    
-    height = 0.3
-    
-    lift_point_1 = np.array([source_pos[0], source_pos[1], height])
-    
-    env.bimanual_dex.dexright.dense_step_action(target_pos=lift_point_1, target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
-    
-    lift_point_2 = np.array([target_pos[0], target_pos[1], height])
-    
-    env.bimanual_dex.dexright.dense_step_action(target_pos=lift_point_2, target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
-
-    env.bimanual_dex.set_both_hand_state(left_hand_state="None", right_hand_state="open")
-    
-    env.garment.particle_material.set_gravity_scale(10.0)
-    for i in range(200):
-        env.step()
-    env.garment.particle_material.set_gravity_scale(1.0) 
-    
-    env.bimanual_dex.dexright.dense_step_action(target_pos=np.array([0.6, 0.8, 0.5]), target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
-
-    for i in range(50):
-        env.step()
-    
-    pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
-        save_or_not=False,
-        save_path=get_unique_filename("data", extension=".ply"),
-        real_time_watch=False,
-    )
     save_jsonl(env)
 
 
@@ -412,7 +380,7 @@ def save_jsonl(env):
     rgb = env.garment_camera.get_rgb_graph(save_or_not=False
                                         ,save_path=get_unique_filename("data", extension=".png"))
     
-    output_image_path = get_unique_filename(f"Preprocess/data/{project_name}/images/image", extension=".png")
+    output_image_path = get_unique_filename("Preprocess/data/image_fold_once/image", extension=".png")
     cv2.imwrite(output_image_path, cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
 
     data["rgb"] = output_image_path.split("/")[-1]
@@ -509,7 +477,7 @@ def save_jsonl(env):
         "bbox": bbox,
     }
     
-    with open(f"Preprocess/data/{project_name}/garments_box.jsonl", "a") as f:
+    with open("Preprocess/data/fold_once.jsonl", "a") as f:
         f.write(json.dumps(data) + "\n")
 
     rgb_image = rgb.copy().astype(np.uint8)
@@ -536,7 +504,7 @@ def save_jsonl(env):
                 if point is not None and point[0] is not None and point[1] is not None:
                     cv2.putText(rgb_image, key, pt1, cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
 
-    output_image_path = get_unique_filename(f"Preprocess/data/{project_name}/data_vis/vis", extension=".png")
+    output_image_path = get_unique_filename("data_vis", extension=".png")
     cv2.imwrite(output_image_path, cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR))
 
 
@@ -652,20 +620,15 @@ def get_rgb_index(env, rgb, point):
 
 if __name__=="__main__":
     args=parse_args_record()
-    # ===================================================================================== #
-    project_name = "random_left_right_0814"
-    # ===================================================================================== #
+    
     if not os.path.exists("Preprocess/data"):
         os.makedirs("Preprocess/data")
 
-    if not os.path.exists(f"Preprocess/data/{project_name}/images"):
-        os.makedirs(f"Preprocess/data/{project_name}/images")
+    if not os.path.exists("Preprocess/data/image_fold_once"):
+        os.makedirs("Preprocess/data/image_fold_once")
 
-    # if not os.path.exists("Preprocess/data/pcd"):
-    #     os.makedirs("Preprocess/data/pcd")
-
-    if not os.path.exists(f"Preprocess/data/{project_name}/data_vis"):
-        os.makedirs(f"Preprocess/data/{project_name}/data_vis")
+    if not os.path.exists("Preprocess/data/pcd"):
+        os.makedirs("Preprocess/data/pcd")
 
     # initial setting
     pos = np.array([0.0, 0.8, 0.2])
@@ -693,13 +656,12 @@ if __name__=="__main__":
 
     env = FoldTops_Env()
     
-    # assets_list = assets_list[::-1]
+    assets_list = assets_list[::-1]
 
     for usd_path in assets_list:
-        for i in range(5):
-        # for ground_material_usd in floors_list:
+        for ground_material_usd in floors_list:
             print(usd_path)
-            ground_material_usd = np.random.choice(floors_list)
+            # ground_material_usd = np.random.choice(floors_list)
             np.random.seed(int(time.time()))
             x = np.random.uniform(-0.1, 0.1) # changeable
             y = np.random.uniform(0.7, 0.9) # changeable

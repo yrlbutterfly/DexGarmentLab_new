@@ -243,7 +243,7 @@ def FoldTops(env):
     manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=env.right_waist)
     env.right_waist_indices = garment_indices[indices]
 
-    save_jsonl(env)
+    # save_jsonl(env)
     
     # ---------------------- left hand ---------------------- #
     pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
@@ -512,33 +512,32 @@ def save_jsonl(env):
     with open("Preprocess/data/tile.jsonl", "a") as f:
         f.write(json.dumps(data) + "\n")
 
-    rgb_image = rgb.copy().astype(np.uint8)
+    # rgb_image = rgb.copy().astype(np.uint8)
 
-    for key, value in data.items():
-        if key != "rgb" and key != "pcd":
-            point = value["point"]
-            bbox = value["bbox"]
+    # for key, value in data.items():
+    #     if key != "rgb" and key != "pcd":
+    #         point = value["point"]
+    #         bbox = value["bbox"]
             
-            # Check if point is valid (not None)
-            if point is not None and point[0] is not None and point[1] is not None:
-                cv2.circle(rgb_image, (int(point[0]), int(point[1])), radius=1, color=(0, 255, 0), thickness=-1)
+    #         # Check if point is valid (not None)
+    #         if point is not None and point[0] is not None and point[1] is not None:
+    #             cv2.circle(rgb_image, (int(point[0]), int(point[1])), radius=1, color=(0, 255, 0), thickness=-1)
             
-            # Check if bbox is valid and has proper coordinates
-            if (bbox is not None and len(bbox) == 2 and 
-                bbox[0] is not None and bbox[1] is not None and
-                bbox[0][0] is not None and bbox[0][1] is not None and
-                bbox[1][0] is not None and bbox[1][1] is not None):
+    #         # Check if bbox is valid and has proper coordinates
+    #         if (bbox is not None and len(bbox) == 4 and 
+    #             bbox[0] is not None and bbox[1] is not None and
+    #             bbox[2] is not None and bbox[3] is not None):
                 
-                pt1 = (int(bbox[0][0]), int(bbox[0][1]))
-                pt2 = (int(bbox[1][0]), int(bbox[1][1]))
-                cv2.rectangle(rgb_image, pt1, pt2, color=(255, 0, 0), thickness=1)
+    #             pt1 = (int(bbox[0]), int(bbox[1]))
+    #             pt2 = (int(bbox[2]), int(bbox[3]))
+    #             cv2.rectangle(rgb_image, pt1, pt2, color=(255, 0, 0), thickness=1)
                 
-                # Only add text if point is valid
-                if point is not None and point[0] is not None and point[1] is not None:
-                    cv2.putText(rgb_image, key, pt1, cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
+    #             # Only add text if point is valid
+    #             if point is not None and point[0] is not None and point[1] is not None:
+    #                 cv2.putText(rgb_image, key, pt1, cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
 
-    output_image_path = get_unique_filename("data_vis", extension=".png")
-    cv2.imwrite(output_image_path, cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR))
+    # output_image_path = get_unique_filename("data_vis", extension=".png")
+    # cv2.imwrite(output_image_path, cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR))
 
 
 def get_area_info(env, rgb, manipulation_points, area_name):
@@ -614,10 +613,10 @@ def get_area_info(env, rgb, manipulation_points, area_name):
     # Check if we have valid points for bbox
     if valid_points and min_x != float('inf') and max_x != float('-inf'):
         # Add the overall bounding box
-        bbox = [(min_x, min_y), (max_x, max_y)]
+        bbox = [min_x, min_y, max_x, max_y]
     else:
         # If no valid points, set default values
-        bbox = [(0, 0), (0, 0)]
+        bbox = [0, 0, 0, 0]
         if centroid[0] is None or centroid[1] is None:
             centroid = (0, 0)
 
@@ -689,15 +688,18 @@ if __name__=="__main__":
 
     env = FoldTops_Env()
     
-    for usd_path in assets_list:
-        for ground_material_usd in floors_list:
-            np.random.seed(int(time.time()))
-            x = np.random.uniform(-0.1, 0.1) # changeable
-            y = np.random.uniform(0.7, 0.9) # changeable
-            pos = np.array([x,y,0.0])
-            ori = np.array([0.0, 0.0, 0.0])
+    assets_list = assets_list[::-1]
 
-            env.apply(pos, ori, ground_material_usd, usd_path)
-            FoldTops(env)
+    for usd_path in assets_list:
+        # for ground_material_usd in floors_list:
+        ground_material_usd = np.random.choice(floors_list)
+        np.random.seed(int(time.time()))
+        x = np.random.uniform(-0.1, 0.1) # changeable
+        y = np.random.uniform(0.7, 0.9) # changeable
+        pos = np.array([x,y,0.0])
+        ori = np.array([0.0, 0.0, 0.0])
+
+        env.apply(pos, ori, ground_material_usd, usd_path)
+        FoldTops(env)
 
     simulation_app.close()

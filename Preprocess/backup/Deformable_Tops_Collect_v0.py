@@ -1,5 +1,5 @@
 from isaacsim import SimulationApp
-simulation_app = SimulationApp({"headless": True})
+simulation_app = SimulationApp({"headless": False})
 
 # load external package
 import os
@@ -57,7 +57,7 @@ class FoldTops_Env(BaseEnv):
 
         # load camera
         self.garment_camera = Recording_Camera(
-            camera_position=np.array([0.0, 1.0, 6.75]), 
+            camera_position=np.array([0.0, 0.8, 6]), 
             camera_orientation=np.array([0, 90.0, 90.0]),
             prim_path="/World/garment_camera",
         )
@@ -167,8 +167,45 @@ def FoldTops(env):
     for i in range(50):
         env.step()
 
-    rgb = env.garment_camera.get_rgb_graph(save_or_not=False
-                                           ,save_path=get_unique_filename("data", extension=".png"))
+    pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
+        save_or_not=False,
+        save_path=get_unique_filename("data", extension=".ply"),
+        real_time_watch=False,
+    )
+
+    save_jsonl(env, pcd)
+    
+    # ---------------------- left hand ---------------------- #
+    
+    source_pos = pcd[np.random.randint(0, len(pcd))]
+    target_pos = pcd[np.random.randint(0, len(pcd))]
+
+    env.bimanual_dex.dexleft.dense_step_action(target_pos=source_pos, target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
+    
+    env.bimanual_dex.set_both_hand_state(left_hand_state="close", right_hand_state="None")
+    
+    height = 0.3
+
+    lift_point_1 = np.array([source_pos[0], source_pos[1], height])
+
+    env.bimanual_dex.dexleft.dense_step_action(target_pos=lift_point_1, target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
+    
+    lift_point_2 = np.array([target_pos[0], target_pos[1], height])
+    
+    env.bimanual_dex.dexleft.dense_step_action(target_pos=lift_point_2, target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
+
+    env.bimanual_dex.set_both_hand_state(left_hand_state="open", right_hand_state="None")
+    
+    env.garment.particle_material.set_gravity_scale(10.0)
+    for i in range(200):
+        env.step()
+    env.garment.particle_material.set_gravity_scale(1.0) 
+    
+    
+    env.bimanual_dex.dexleft.dense_step_action(target_pos=np.array([-0.6, 0.8, 0.5]), target_ori=np.array([0.579, -0.579, -0.406, 0.406]), angular_type="quat")
+
+    for i in range(50):
+        env.step()
     
     pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
         save_or_not=False,
@@ -176,17 +213,11 @@ def FoldTops(env):
         real_time_watch=False,
     )
 
-    for i in range(50):
-        env.step()
-
-    # save_jsonl(env, pcd)
-
-    # save_jsonl(env, pcd, rgb)
-    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=[1902, 685]) # [左袖口，右领口，右袖口，左领口，左下，右下]
+    save_jsonl(env, pcd)
 
     # --------------------- right hand --------------------- #
-    source_pos = manipulation_points[0]
-    target_pos = manipulation_points[1]
+    source_pos = pcd[np.random.randint(0, len(pcd))]
+    target_pos = pcd[np.random.randint(0, len(pcd))]
             
     env.bimanual_dex.dexright.dense_step_action(target_pos=source_pos, target_ori=np.array([0.406, -0.406, -0.579, 0.579]), angular_type="quat")
             
@@ -223,28 +254,13 @@ def FoldTops(env):
 
 
 def save_jsonl(env, pcd):
-    right_cuff = [1,38,120,153,233,302,362,364,394,425,564,571,599,775,878,954,977,1017,1036,1039,1043,1134,1139,1176,1202,1321,1506,1629,1709,1755,1902,1916]
-    # right_cuff = [22,48,163,304,356,500,585,588,592,596,745,1055,1118,1121,1126,1144,1305,1420,1437,1438,1478,1522,1525,1548,1950]
+    keypoints = [7,106,147,231,236,382,387,532,563,609,673,958,1082,1146,1161,1196,1241,1418,1661,1687,1697,1760,2031]
+    # keypoints = [957, 501, 1902, 448, 1196, 422, 1228, 824, 1364] # [左袖口，右领口，右袖口，左领口，左下，右下]
 
     rgb = env.garment_camera.get_rgb_graph(save_or_not=False
                                            ,save_path=get_unique_filename("data", extension=".png"))
 
-    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=right_cuff) 
-
-
-    # # Create point cloud visualization
-    # pcd_vis = o3d.geometry.PointCloud()
-    # pcd_vis.points = o3d.utility.Vector3dVector(pcd)
-    # pcd_vis.paint_uniform_color([0.8, 0.8, 0.8])  # Set base color to light gray
-    
-    # # Color the manipulation points red
-    # colors = np.asarray(pcd_vis.colors)
-    # for idx in indices:
-    #     colors[idx] = [1, 0, 0]  # Red color for manipulation points
-    # pcd_vis.colors = o3d.utility.Vector3dVector(colors)
-    
-    # # Show point cloud with colored manipulation points
-    # o3d.visualization.draw_geometries([pcd_vis])
+    manipulation_points, indices, points_similarity = env.model.get_manipulation_points(input_pcd=pcd, index_list=keypoints) 
 
     points_to_draw = pcd[indices]
 
@@ -301,6 +317,16 @@ def save_jsonl(env, pcd):
     o3d_pcd.points = o3d.utility.Vector3dVector(pcd)
     o3d.io.write_point_cloud(pcd_path, o3d_pcd)
 
+    data = {
+                "rgb": output_image_path.split("/")[-1],
+                "pcd": pcd_path.split("/")[-1],
+                "points": points,
+                "bbox": bboxes,
+            }
+    
+    with open("Preprocess/data/tile.jsonl", "a") as f:
+        f.write(json.dumps(data) + "\n")
+
 
 if __name__=="__main__":
     args=parse_args_record()
@@ -327,7 +353,7 @@ if __name__=="__main__":
             clean_line = line.rstrip('\n')
             assets_list.append(clean_line)
 
-    usd_path=np.random.choice(assets_list)
+    # usd_path=np.random.choice(assets_list)
 
     floors_lists = os.path.join(Base_dir,"Preprocess/floors_list.txt")
     floors_list = []
@@ -340,22 +366,15 @@ if __name__=="__main__":
 
     env = FoldTops_Env()
     
-    assets_list = assets_list[197:]
     for usd_path in assets_list:
-        # usd_path = "Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top10/TCLC_top10_obj.usd" Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Tutle_Neck/TCLC_Tutle_Neck_obj.usd
-        # Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_T_Shirt_Long_Sleeve_V_Neck/TNLC_T_Shirt_Long_Sleeve_V_Neck_obj.usd
-        # Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top319/TNLC_Top319_obj.usd
-        # Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_top9/TNLC_top9_obj.usd
-        # Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Fleece/TNLC_Fleece_obj.usd
-        print(usd_path)
-        ground_material_usd = None # np.random.choice(floors_list)
-        np.random.seed(int(time.time()))
-        x = np.random.uniform(-0.1, 0.1) # changeable
-        y = np.random.uniform(0.7, 0.9) # changeable
-        pos = np.array([x,y,0.0])
-        ori = np.array([0.0, 0.0, 0.0])
+        for ground_material_usd in floors_list:
+            np.random.seed(int(time.time()))
+            x = np.random.uniform(-0.1, 0.1) # changeable
+            y = np.random.uniform(0.7, 0.9) # changeable
+            pos = np.array([x,y,0.0])
+            ori = np.array([0.0, 0.0, 0.0])
 
-        env.apply(pos, ori, ground_material_usd, usd_path)
-        FoldTops(env)
+            env.apply(pos, ori, ground_material_usd, usd_path)
+            FoldTops(env)
 
     simulation_app.close()

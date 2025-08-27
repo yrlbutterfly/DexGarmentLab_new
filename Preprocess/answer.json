@@ -1,0 +1,16 @@
+[
+	{"bbox_2d": [165, 240, 193, 267], "label": "left_cuff"},
+	{"bbox_2d": [388, 239, 429, 267], "label": "right_cuff"},
+	{"bbox_2d": [260, 140, 297, 154], "label": "left_collar"},
+	{"bbox_2d": [315, 140, 351, 154], "label": "right_collar"},
+	{"bbox_2d": [285, 140, 321, 154], "label": "center_collar"},
+	{"bbox_2d": [285, 278, 321, 290], "label": "left_hem"},
+	{"bbox_2d": [321, 278, 357, 290], "label": "right_hem"},
+	{"bbox_2d": [285, 290, 321, 302], "label": "center_hem"},
+	{"bbox_2d": [260, 208, 285, 228], "label": "left_armpit"},
+	{"bbox_2d": [321, 208, 347, 228], "label": "right_armpit"},
+	{"bbox_2d": [260, 154, 285, 174], "label": "left_shoulder"},
+	{"bbox_2d": [321, 154, 347, 174], "label": "right_shoulder"},
+	{"bbox_2d": [260, 228, 285, 248], "label": "left_waist"},
+	{"bbox_2d": [321, 228, 347, 248], "label": "right_waist"}
+]

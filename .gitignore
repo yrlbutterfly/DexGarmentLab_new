@@ -7,4 +7,7 @@ pipeline.sh
 tmp*
 **/__pycache__/
 data
-curobo
+curobo.
+Qwen2.5-VL
+data_vis
+video
