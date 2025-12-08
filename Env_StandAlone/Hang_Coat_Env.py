@@ -49,7 +49,7 @@ class HangCoat_Env(BaseEnv):
         env_dx:float=0.0,
         env_dy:float=0.0,
         ground_material_usd:str=None,
-        record_vedio_flag:bool=False, 
+        record_video_flag:bool=False, 
     ):
         # load BaseEnv
         super().__init__()
@@ -152,7 +152,7 @@ class HangCoat_Env(BaseEnv):
         )
 
         # add thread and record gif Asynchronously(use to collect rgb data for generating gif)
-        if record_vedio_flag:
+        if record_video_flag:
             self.thread_record = threading.Thread(target=self.env_camera.collect_rgb_graph_for_vedio)
             self.thread_record.daemon = True
 
@@ -206,9 +206,9 @@ class HangCoat_Env(BaseEnv):
         
         self.step_num += 1
      
-def HangCoat(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_collection_flag, record_vedio_flag):
+def HangCoat(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_collection_flag, record_video_flag):
     
-    env = HangCoat_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_vedio_flag)
+    env = HangCoat_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_video_flag)
     
     env.garment.particle_material.set_gravity_scale(0.7)
     
@@ -268,7 +268,7 @@ def HangCoat(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_colle
     garment_length = abs(garment_boundary_points[0][1] - garment_boundary_points[1][1])
     lift_height = garment_length * 0.35 + env.pothook_center[2]
 
-    if record_vedio_flag:
+    if record_video_flag:
         env.thread_record.start()
         
     env.bimanual_dex.dense_move_both_ik(left_pos=manipulation_points[1], left_ori=np.array([0.579, -0.579, -0.406, 0.406]), right_pos=manipulation_points[0], right_ori=np.array([0.406, -0.406, -0.579, 0.579]))
@@ -331,7 +331,7 @@ def HangCoat(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_colle
     cprint(f"[INFO]final result: {success}", color="green", on_color="on_green")
     
     # if you wanna create gif, use this code. Need Cooperation with thread.
-    if record_vedio_flag and success:
+    if record_video_flag and success:
         if not os.path.exists("Data/Hang_Coat/vedio"):
             os.makedirs("Data/Hang_Coat/vedio")
         env.env_camera.create_mp4(get_unique_filename("Data/Hang_Coat/vedio/vedio", ".mp4"))
@@ -379,7 +379,7 @@ if __name__=="__main__":
             usd_path=np.random.choice(assets_list)
             print(usd_path)
 
-    HangCoat(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.data_collection_flag, args.record_vedio_flag)
+    HangCoat(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.data_collection_flag, args.record_video_flag)
 
     if args.data_collection_flag:
         simulation_app.close()

@@ -47,7 +47,7 @@ class FoldTrousers_Env(BaseEnv):
         ori:np.ndarray=None, 
         usd_path:str=None, 
         ground_material_usd:str=None,
-        record_vedio_flag:bool=False, 
+        record_video_flag:bool=False, 
     ):
         # load BaseEnv
         super().__init__()
@@ -129,7 +129,7 @@ class FoldTrousers_Env(BaseEnv):
         self.env_camera.initialize(depth_enable=True)
         
         # add thread and record gif Asynchronously(use to collect rgb data for generating gif)
-        if record_vedio_flag:
+        if record_video_flag:
             self.thread_record = threading.Thread(target=self.env_camera.collect_rgb_graph_for_vedio)
             self.thread_record.daemon = True
         
@@ -175,11 +175,11 @@ class FoldTrousers_Env(BaseEnv):
         
         self.step_num += 1
     
-def FoldTrousers(pos, ori, usd_path, ground_material_usd, data_collection_flag, record_vedio_flag):
+def FoldTrousers(pos, ori, usd_path, ground_material_usd, data_collection_flag, record_video_flag):
         
-    env = FoldTrousers_Env(pos, ori, usd_path, ground_material_usd, record_vedio_flag)
+    env = FoldTrousers_Env(pos, ori, usd_path, ground_material_usd, record_video_flag)
    
-    if record_vedio_flag:
+    if record_video_flag:
         env.thread_record.start()     # if you want to record gif, please uncomment this line
     
     # hide prim to get garment point cloud
@@ -372,7 +372,7 @@ def FoldTrousers(pos, ori, usd_path, ground_material_usd, data_collection_flag, 
     cprint(f"final result: {success}", color="green", on_color="on_green")
     
     # if you wanna create gif, use this code. Need Cooperation with thread.
-    if record_vedio_flag and success:
+    if record_video_flag and success:
         if not os.path.exists("Data/Fold_Trousers/vedio"):
             os.makedirs("Data/Fold_Trousers/vedio")
         env.env_camera.create_mp4(get_unique_filename("Data/Fold_Trousers/vedio/vedio", ".mp4"))
@@ -412,7 +412,7 @@ if __name__=="__main__":
                 assets_list.append(clean_line)
         usd_path=np.random.choice(assets_list)
     
-    FoldTrousers(pos, ori, usd_path, args.ground_material_usd, args.data_collection_flag, args.record_vedio_flag)
+    FoldTrousers(pos, ori, usd_path, args.ground_material_usd, args.data_collection_flag, args.record_video_flag)
 
     if args.data_collection_flag:
         simulation_app.close()

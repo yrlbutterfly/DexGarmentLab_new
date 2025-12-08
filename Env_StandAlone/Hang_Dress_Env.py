@@ -49,7 +49,7 @@ class HangDress_Env(BaseEnv):
         env_dx:float=0.0,
         env_dy:float=0.0,
         ground_material_usd:str=None,
-        record_vedio_flag:bool=False, 
+        record_video_flag:bool=False, 
     ):
         # load BaseEnv
         super().__init__()
@@ -160,7 +160,7 @@ class HangDress_Env(BaseEnv):
         )
         
         # add thread and record gif Asynchronously(use to collect rgb data for generating gif)
-        if record_vedio_flag:
+        if record_video_flag:
             self.thread_record = threading.Thread(target=self.env_camera.collect_rgb_graph_for_vedio)
             self.thread_record.daemon = True
             
@@ -217,9 +217,9 @@ class HangDress_Env(BaseEnv):
 
         
 
-def HangDress(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_collection_flag, record_vedio_flag):
+def HangDress(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_collection_flag, record_video_flag):
     
-    env = HangDress_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_vedio_flag)
+    env = HangDress_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_video_flag)
     
     env.garment.particle_material.set_gravity_scale(0.7)
     
@@ -265,7 +265,7 @@ def HangDress(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_coll
     for i in range(50):
         env.step()
         
-    if record_vedio_flag:
+    if record_video_flag:
         env.thread_record.start()
 
     # get manipulation points from GAM Model
@@ -366,7 +366,7 @@ def HangDress(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, data_coll
     cprint(f"final result: {success}", color="green", on_color="on_green")
     
     # if you wanna create gif, use this code. Need Cooperation with thread.
-    if record_vedio_flag and success:
+    if record_video_flag and success:
         if not os.path.exists("Data/Hang_Dress/vedio"):
             os.makedirs("Data/Hang_Dress/vedio")
         env.env_camera.create_mp4(get_unique_filename("Data/Hang_Dress/vedio/vedio", ".mp4"))
@@ -415,7 +415,7 @@ if __name__=="__main__":
                     assets_list.append(clean_line)
             usd_path=np.random.choice(assets_list)
 
-    HangDress(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.data_collection_flag, args.record_vedio_flag)
+    HangDress(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.data_collection_flag, args.record_video_flag)
 
     if args.data_collection_flag:
         simulation_app.close()

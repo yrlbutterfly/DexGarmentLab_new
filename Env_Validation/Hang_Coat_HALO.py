@@ -51,7 +51,7 @@ class Hang_Coat_Env(BaseEnv):
         env_dx:float=0.0,
         env_dy:float=0.0,
         ground_material_usd:str=None,
-        record_vedio_flag:bool=False, 
+        record_video_flag:bool=False, 
         training_data_num:int=100,
         stage_1_checkpoint_num:int=1500, 
         stage_2_checkpoint_num:int=1500, 
@@ -159,7 +159,7 @@ class Hang_Coat_Env(BaseEnv):
         )
         
         # add thread and record gif Asynchronously(use to collect rgb data for generating gif)
-        if record_vedio_flag:
+        if record_video_flag:
             self.thread_record = threading.Thread(target=self.env_camera.collect_rgb_graph_for_vedio)
             self.thread_record.daemon = True
 
@@ -183,9 +183,9 @@ class Hang_Coat_Env(BaseEnv):
 
         cprint("World Ready!", "green", "on_green")
      
-def Hang_Coat_Validation_HALO(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, validation_flag, record_vedio_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num):
+def Hang_Coat_Validation_HALO(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, validation_flag, record_video_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num):
     
-    env = Hang_Coat_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_vedio_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num)
+    env = Hang_Coat_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_video_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num)
     
     env.garment.particle_material.set_gravity_scale(0.45)
     
@@ -246,7 +246,7 @@ def Hang_Coat_Validation_HALO(pos, ori, usd_path, env_dx, env_dy, ground_materia
     garment_length = abs(garment_boundary_points[0][1] - garment_boundary_points[1][1])
     lift_height = garment_length * 0.35 + env.pothook_center[2]
 
-    if record_vedio_flag:
+    if record_video_flag:
         env.thread_record.start()
         
     env.bimanual_dex.dense_move_both_ik(left_pos=manipulation_points[1], left_ori=np.array([0.579, -0.579, -0.406, 0.406]), right_pos=manipulation_points[0], right_ori=np.array([0.406, -0.406, -0.579, 0.579]))
@@ -315,7 +315,7 @@ def Hang_Coat_Validation_HALO(pos, ori, usd_path, env_dx, env_dy, ground_materia
         env.step()
         
     # if you wanna create gif, use this code. Need Cooperation with thread.
-    if record_vedio_flag:
+    if record_video_flag:
         if not os.path.exists("Data/Hang_Coat_Validation_HALO/vedio"):
             os.makedirs("Data/Hang_Coat_Validation_HALO/vedio")
         env.env_camera.create_mp4(get_unique_filename("Data/Hang_Coat_Validation_HALO/vedio/vedio", ".mp4"))
@@ -367,7 +367,7 @@ if __name__=="__main__":
             usd_path=np.random.choice(assets_list)
             print(usd_path)
 
-    Hang_Coat_Validation_HALO(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.validation_flag, args.record_vedio_flag, args.training_data_num, args.stage_1_checkpoint_num, args.stage_2_checkpoint_num, args.stage_3_checkpoint_num)
+    Hang_Coat_Validation_HALO(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.validation_flag, args.record_video_flag, args.training_data_num, args.stage_1_checkpoint_num, args.stage_2_checkpoint_num, args.stage_3_checkpoint_num)
 
     if args.validation_flag:
         simulation_app.close()

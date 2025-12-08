@@ -586,7 +586,7 @@
         "~/isaacsim_4.5.0/kit/python/lib/python3.10",
         "~/isaacsim_4.5.0/kit/python/lib/python3.10/site-packages",
     ],
-    "python.languageServer": "Pylance",
+    "python.languageServer": "None",
     "python.defaultInterpreterPath": "~/isaacsim_4.5.0/kit/python/bin/python3",
     // This enables python language server. Seems to work slightly better than jedi:
     "python.jediEnabled": false,

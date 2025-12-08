@@ -41,13 +41,13 @@ while [ "$current_num" -lt "$demo_num" ]; do
     # print progress bar
     print_progress "$current_num" "$demo_num" "$task_name"
 
-    # execute
+    # execute (log stdout & stderr to file for debugging)
     $ISAAC_PATH Env_StandAlone/${task_name}_Env.py \
         --env_random_flag True \
-        --garment_random_flag True \
+        --garment_random_flag False \
         --data_collection_flag True \
-        --record_vedio_flag True \
-        > /dev/null 2>&1
+        --record_video_flag True \
+        > "${base_dir}/run.log" 2>&1
 
     # update collected data number
     current_num=$(ls "${base_dir}/train_data" | wc -l)

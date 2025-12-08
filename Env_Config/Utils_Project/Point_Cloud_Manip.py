@@ -24,25 +24,25 @@ def get_surface_vertices(garment_vertices, pcd):
     M = garment_vertices.shape[0]  # Number of garment vertices
     
     # Track which garment vertices are already selected
-    available_vertices = np.ones(M, dtype=bool)  # True means available
-    selected_indices = np.zeros(N, dtype=int)
+    available_vertices = np.ones(M, dtype=bool)  # True 表示该顶点还没被配对
+    selected_indices = np.zeros(N, dtype=int)    # 存储为每个点云点选中的网格索引
     
     # For each point in pcd, find the nearest available point in garment_vertices
     for i, point in enumerate(pcd):
-        # Calculate distances to all available garment vertices
+        # 计算该点云点与所有网格顶点的距离
         distances = np.linalg.norm(garment_vertices - point, axis=1)
         
-        # Mask out already selected vertices by setting their distances to infinity
+        # 已经被映射过的顶点距离设为 inf，确保“一对一”匹配
         distances[~available_vertices] = np.inf
         
-        # Find the index of the nearest available vertex
+        # 选取最近的可用顶点并记录其在原网格中的索引
         nearest_idx = np.argmin(distances)
         selected_indices[i] = nearest_idx
         
-        # Mark this vertex as no longer available
+        # 将该顶点标记为已使用，避免被其他点复用
         available_vertices[nearest_idx] = False
     
-    # Return the corresponding vertices and indices
+    # 返回与点云大小一致的顶点坐标以及对应的原始索引
     return garment_vertices[selected_indices], selected_indices
 
 
@@ -58,6 +58,16 @@ def furthest_point_sampling(points, colors=None, n_samples=2048, indices=False):
 
     # Number of points
     num_points = points.size(0)  # N
+
+    # 如果点云为空，给出清晰报错，避免 torch.randint(0, 0, ...) 直接崩溃
+    if num_points == 0:
+        raise ValueError(
+            "furthest_point_sampling 收到空点云：num_points == 0，"
+            "请检查上游 get_point_cloud_data_from_segment / 相机分割是否返回了空点云。"
+        )
+
+    # 采样数量最多不超过实际点数
+    n_samples = min(n_samples, num_points)
 
     # Initialize an array for the sampled indices
     sample_inds = torch.zeros(n_samples, dtype=torch.long).cuda()  # [S]

@@ -3,7 +3,6 @@ Data
 Tool_Scripts
 Texture_Generate.sh
 pipeline.sh
-/*.py
 tmp*
 **/__pycache__/
 data
@@ -11,3 +10,4 @@ curobo.
 Qwen2.5-VL
 data_vis
 video
+curobo/

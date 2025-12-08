@@ -52,7 +52,7 @@ class HangTops_Env(BaseEnv):
         env_dx:float=0.0,
         env_dy:float=0.0,
         ground_material_usd:str=None,
-        record_vedio_flag:bool=False, 
+        record_video_flag:bool=False, 
         training_data_num:int=100,
         stage_1_checkpoint_num:int=1500, 
         stage_2_checkpoint_num:int=1500, 
@@ -169,7 +169,7 @@ class HangTops_Env(BaseEnv):
         )
         
         # add thread and record gif Asynchronously(use to collect rgb data for generating gif)
-        if record_vedio_flag:
+        if record_video_flag:
             self.thread_record = threading.Thread(target=self.env_camera.collect_rgb_graph_for_vedio)
             self.thread_record.daemon = True
             
@@ -197,9 +197,9 @@ class HangTops_Env(BaseEnv):
         
         
 # if __name__=="__main__":
-def HangTops(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, validation_flag, record_vedio_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num):
+def HangTops(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, validation_flag, record_video_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num):
     
-    env = HangTops_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_vedio_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num)
+    env = HangTops_Env(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, record_video_flag, training_data_num, stage_1_checkpoint_num, stage_2_checkpoint_num, stage_3_checkpoint_num)
     
     env.garment.particle_material.set_gravity_scale(0.45)
     
@@ -246,7 +246,7 @@ def HangTops(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, validation
     for i in range(50):
         env.step()
         
-    if record_vedio_flag:
+    if record_video_flag:
         env.thread_record.start()
 
     # get manipulation points from GAM Model
@@ -321,7 +321,7 @@ def HangTops(pos, ori, usd_path, env_dx, env_dy, ground_material_usd, validation
         env.step()
         
     # if you wanna create gif, use this code. Need Cooperation with thread.
-    if record_vedio_flag:
+    if record_video_flag:
         if not os.path.exists("Data/Hang_Tops_Validation_HALO/vedio"):
             os.makedirs("Data/Hang_Tops_Validation_HALO/vedio")
         env.env_camera.create_mp4(get_unique_filename("Data/Hang_Tops_Validation_HALO/vedio/vedio", ".mp4"))
@@ -394,7 +394,7 @@ if __name__=="__main__":
                     assets_list.append(clean_line)
             usd_path=np.random.choice(assets_list)
 
-    HangTops(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.validation_flag, args.record_vedio_flag, args.training_data_num, args.stage_1_checkpoint_num, args.stage_2_checkpoint_num, args.stage_3_checkpoint_num)
+    HangTops(pos, ori, usd_path, env_dx, env_dy, args.ground_material_usd, args.validation_flag, args.record_video_flag, args.training_data_num, args.stage_1_checkpoint_num, args.stage_2_checkpoint_num, args.stage_3_checkpoint_num)
 
     if args.validation_flag:
         simulation_app.close()

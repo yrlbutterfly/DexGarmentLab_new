@@ -23,7 +23,7 @@ def parse_args_record():
     
     parser.add_argument("--ground_material_usd", type=str, default=None, help="ground material usd path")
     parser.add_argument("--data_collection_flag",type=str2bool, default=False, help="data collection flag")
-    parser.add_argument("--record_vedio_flag",type=str2bool, default=False, help="record vedio flag")
+    parser.add_argument("--record_video_flag",type=str2bool, default=False, help="record vedio flag")
     parser.add_argument("--env_random_flag", type=str2bool, default=False, help="env random flag")
     parser.add_argument("--garment_random_flag", type=str2bool, default=False, help="garemnt random flag")
     
@@ -57,7 +57,7 @@ def parse_args_val():
     
     parser.add_argument("--ground_material_usd", type=str, default=None, help="ground material usd path")
     parser.add_argument("--validation_flag",type=str2bool, default=False, help="validation flag")
-    parser.add_argument("--record_vedio_flag",type=str2bool, default=False, help="record vedio flag")
+    parser.add_argument("--record_video_flag",type=str2bool, default=False, help="record vedio flag")
     parser.add_argument("--env_random_flag", type=str2bool, default=False, help="env random flag")
     parser.add_argument("--garment_random_flag", type=str2bool, default=False, help="garemnt random flag")
     

@@ -171,22 +171,26 @@ class Recording_Camera:
         else:
             point_cloud = np.hstack((point_cloud, np.zeros((point_cloud.shape[0], 3))))
             return point_cloud
-        
-
-    def collect_rgb_graph_for_vedio(self):
+    
+    
+    def collect_rgb_graph_for_video(self):
         '''
-        take RGB graph from recording_camera and collect them for gif generation.
+        Take RGB frames from recording_camera and collect them for video/gif generation.
         '''
         # when capture flag is True, make camera capture photos
         while self.capture:
             data = self.camera.get_rgb()
             if len(data):
                 self.video_frame.append(data)
-
-            # take rgb photo every 500 ms
+            
+            # take rgb photo every 100 ms
             time.sleep(0.1)
             # print("get rgb successfully")
         cprint("stop get rgb", "green")
+
+    # Backward compatibility: keep the old (misspelled) API name working
+    def collect_rgb_graph_for_vedio(self):
+        return self.collect_rgb_graph_for_video()
 
 
     def create_gif(self, save_path:str=get_unique_filename(base_filename=f"Assets/Replays/carry_garment/animation/animation",extension=".gif")):

@@ -49,7 +49,7 @@ class FoldTops_Env(BaseEnv):
         ori:np.ndarray=None, 
         usd_path:str=None, 
         ground_material_usd:str=None,
-        record_vedio_flag:bool=False, 
+        record_video_flag:bool=False, 
     ):
         # load BaseEnv
         super().__init__()
@@ -118,7 +118,7 @@ class FoldTops_Env(BaseEnv):
         self.env_camera.initialize(depth_enable=True)
         
         # add thread and record gif Asynchronously(use to collect rgb data for generating gif)
-        if record_vedio_flag:
+        if record_video_flag:
             self.thread_record = threading.Thread(target=self.env_camera.collect_rgb_graph_for_vedio)
             self.thread_record.daemon = True
 
@@ -135,9 +135,9 @@ class FoldTops_Env(BaseEnv):
         cprint("World Ready!", "green", "on_green")
 
 
-def FoldTops(pos, ori, usd_path, ground_material_usd, record_vedio_flag=False):
+def FoldTops(pos, ori, usd_path, ground_material_usd, record_video_flag=False):
     
-    env = FoldTops_Env(pos, ori, usd_path, ground_material_usd, record_vedio_flag)
+    env = FoldTops_Env(pos, ori, usd_path, ground_material_usd, record_video_flag)
 
     for i in range(50):
         env.step()

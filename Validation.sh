@@ -72,7 +72,7 @@ while [ "$current_num" -lt "$validation_num" ]; do
     $ISAAC_PATH Env_Validation/${task_name}_${type}.py \
         --env_random_flag True \
         --garment_random_flag True \
-        --record_vedio_flag True \
+        --record_video_flag True \
         --validation_flag True \
         --training_data_num "$training_data_num" \
         --stage_1_checkpoint_num "$stage_1_checkpoint_num" \
