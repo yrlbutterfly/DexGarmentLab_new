@@ -370,7 +370,7 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, validation_flag, record_vi
             for _ in range(5):    
                 env.step()
                 
-            # 重新采样最新的观测，并告知策略模型当前的 obs，以便其内部维护轨迹等信息hhh
+            # 重新采样最新的观测，并告知策略模型当前的 obs，以便其内部维护轨迹等信息hhhh
             joint_pos_L = env.bimanual_dex.dexleft.get_joint_positions()
             joint_pos_R = env.bimanual_dex.dexright.get_joint_positions()
             joint_state = np.concatenate([joint_pos_L, joint_pos_R])
