@@ -307,17 +307,16 @@ class TrainSADPGWorkspace:
             ) == 0 and cfg.checkpoint.save_ckpt:
 
                 if not cfg.policy.use_pc_color:
-                    if not os.path.exists(f"./checkpoints/{self.cfg.task.name}"):
-                        os.makedirs(f"./checkpoints/{self.cfg.task.name}")
-                    save_path = (
-                        f"./checkpoints/{self.cfg.task.name}/{self.epoch + 1}.ckpt"
-                    )
+                    # 保存到共享目录 /share_data/yanruilin/checkpoints/Fold_Tops/{task_name}/
+                    base_ckpt_dir = f"/share_data/yanruilin/checkpoints/Fold_Tops/{self.cfg.task.name}"
+                    if not os.path.exists(base_ckpt_dir):
+                        os.makedirs(base_ckpt_dir, exist_ok=True)
+                    save_path = f"{base_ckpt_dir}/{self.epoch + 1}.ckpt"
                 else:
-                    if not os.path.exists(f"./checkpoints/{self.cfg.task.name}_w_rgb"):
-                        os.makedirs(f"./checkpoints/{self.cfg.task.name}_w_rgb")
-                    save_path = (
-                        f"./checkpoints/{self.cfg.task.name}_w_rgb/{self.epoch + 1}.ckpt"
-                    )
+                    base_ckpt_dir = f"/share_data/yanruilin/checkpoints/Fold_Tops/{self.cfg.task.name}_w_rgb"
+                    if not os.path.exists(base_ckpt_dir):
+                        os.makedirs(base_ckpt_dir, exist_ok=True)
+                    save_path = f"{base_ckpt_dir}/{self.epoch + 1}.ckpt"
 
                 self.save_checkpoint(save_path)
 
@@ -348,11 +347,11 @@ class TrainSADPGWorkspace:
 
         if not cfg.policy.use_pc_color:
             ckpt_file = pathlib.Path(
-                f"Model_HALO/SADP_G/checkpoints/{task_name}/{checkpoint_num}.ckpt"
+                f"/share_data/yanruilin/checkpoints/Fold_Tops/{task_name}/{checkpoint_num}.ckpt"
             )
         else:
             ckpt_file = pathlib.Path(
-                f"Model_HALO/SADP_G/checkpoints/{task_name}_w_rgb/{checkpoint_num}.ckpt"
+                f"/share_data/yanruilin/checkpoints/Fold_Tops/{task_name}_w_rgb/{checkpoint_num}.ckpt"
             )
 
         print("ckpt file exist:", ckpt_file.is_file())

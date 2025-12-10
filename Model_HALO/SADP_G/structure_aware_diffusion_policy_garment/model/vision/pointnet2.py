@@ -56,7 +56,8 @@ class PointNet2Global(nn.Module):
     def __init__(self, affordance_feature=False, feature_dim=32):
         super(PointNet2Global, self).__init__()
         if affordance_feature:
-            additional_channel = 2
+            # points_affordance_feature 维度为 4，对应每个点额外 4 维特征
+            additional_channel = 4
         else:
             additional_channel = 0
         self.affordance_feature = affordance_feature
@@ -71,7 +72,8 @@ class PointNet2Global(nn.Module):
     def forward(self, xyz):
         # Set Abstraction layers
         if self.affordance_feature:
-            if xyz.shape[1] != 5:
+            # 期望输入为 (B, N, 7) 或 (B, 7, N)，其中 7 = 3 (xyz) + 4 (affordance)
+            if xyz.shape[1] != 7:
                 xyz = xyz.permute(0, 2, 1)
         else:
             if xyz.shape[1] != 3:

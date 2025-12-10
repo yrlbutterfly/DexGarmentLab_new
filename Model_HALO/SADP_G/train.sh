@@ -13,7 +13,7 @@ expert_data_num=${2}
 seed=${3}
 gpu_id=${4}
 DEBUG=${5} # True or False
-python_path=~/isaacsim_4.5.0/python.sh
+#python_path=~/isaacsim_4.5.0/python.sh
 
 export ISAAC_PATH=$python_path
 
@@ -43,9 +43,9 @@ fi
 export HYDRA_FULL_ERROR=1
 export CUDA_VISIBLE_DEVICES=${gpu_id}
 
-$ISAAC_PATH train.py --config-name=${config_name}.yaml \
+python train.py --config-name=${config_name}.yaml \
                             task.name=${task_name}_${expert_data_num} \
-                            task.dataset.zarr_path="data/${task_name}_${expert_data_num}.zarr" \
+                            task.dataset.zarr_path="/share_data/yanruilin/data/dp_traj/${task_name}_${expert_data_num}.zarr" \
                             training.debug=$DEBUG \
                             training.seed=${seed} \
                             training.device="cuda:0" \

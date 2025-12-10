@@ -1,5 +1,6 @@
 from isaacsim import SimulationApp
 # 创建 Isaac Sim 仿真应用，headless=True 表示使用无界面模式（适合批量验证 / 集群）
+# - 若需要在本地可视化调试，可以改为 headless=False；但服务器/集群上建议保持为 True
 simulation_app = SimulationApp({"headless": True})
 
 # ------------------------- #
@@ -54,6 +55,14 @@ class FoldTops_Env(BaseEnv):
     - 加载地面、衣服（布料）、双臂机器人、相机等仿真资产
     - 初始化 HALO 中的 GAM（几何可操作性模型）与 SADP_G（三阶段策略模型）
     - 对外提供 step / 相机观测 / 机器人控制 等接口
+
+    整体流程：
+    1. 在场景中放置地面、衣服、双臂机器人和两个相机
+    2. 调用 GAM 模型从衣服点云中提取关键可操作点（manipulation points）以及对应特征
+    3. 按照 HALO 设定的 3 个阶段，依次调用 SADP_G 策略网络生成机械臂关节动作序列
+    4. 完成折叠后，基于点云与几何规则自动评估折叠效果，并在需要时记录日志/图片/视频
+
+    该类本身只负责“仿真环境 + 策略推理”的封装，不负责策略训练过程。
     """
     def __init__(
         self, 
@@ -67,6 +76,21 @@ class FoldTops_Env(BaseEnv):
         stage_2_checkpoint_num:int=1500, 
         stage_3_checkpoint_num:int=1500, 
     ):
+        """
+        初始化 Fold Tops 仿真环境。
+
+        参数：
+        - pos: np.ndarray，衣服初始位置 (x, y, z)，这里只真正使用 x、y，z 会在内部重设为 0.2
+        - ori: np.ndarray，衣服初始欧拉角朝向 (roll, pitch, yaw)
+        - usd_path: str，自定义衣服 USD 路径；若为 None，则使用默认的长袖上衣资产
+        - ground_material_usd: str，地面材质 USD 路径，用于设置地面的纹理与外观
+        - record_video_flag: bool，是否在仿真过程中录制视频（由 env_camera 生成 mp4）
+        - training_data_num: int，训练数据量，用于构造/加载对应的 SADP_G 模型配置
+        - stage_1_checkpoint_num / stage_2_checkpoint_num / stage_3_checkpoint_num: int，
+          三个阶段策略网络分别使用的 checkpoint 编号，用于从对应目录中加载权重。
+
+        通常不直接实例化本类，而是通过下方的 FoldTops 函数统一创建和调用。
+        """
         # 先初始化基础仿真环境（时间步长、物理世界、场景等）
         super().__init__()
         
@@ -209,6 +233,22 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, validation_flag, record_vi
     - 使用 GAM 模型预测关键抓取点
     - 按照 HALO 设计的 3 个阶段调用 SADP_G 策略生成机器人动作
     - 最后根据折叠结果计算成功率，并在需要时写入日志 / 保存图像 / 视频
+
+    参数说明：
+    - pos: np.ndarray，衣服初始位置 (x, y, z)，这里只主要关心 x、y，z 会在环境内部重设为 0.2
+    - ori: np.ndarray，衣服初始欧拉角朝向
+    - usd_path: str，衣服 USD 路径；为 None 时使用默认上衣
+    - ground_material_usd: str，地面材质路径
+    - validation_flag: bool，是否为“批量验证模式”
+        * True  ：每次运行会将结果写入 log 文件，并在结束后自动关闭仿真
+        * False ：仅运行一次任务，结束后保持仿真运行，方便人工观察
+    - record_video_flag: bool，是否记录验证过程视频
+    - training_data_num: int，SADP_G 模型对应的训练数据规模（影响模型配置/权重）
+    - stage_1_checkpoint_num / stage_2_checkpoint_num / stage_3_checkpoint_num: int，
+      三个阶段策略网络所加载的 checkpoint 编号
+
+    返回：
+    - 无显式返回值，最终结果通过日志与终端输出体现（success / fail）。
     """
     
     # 构建上衣折叠环境
@@ -249,7 +289,8 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, validation_flag, record_vi
     # 使用 GAM 模型在输入点云上预测关键操作点，以及每个点的可操作性评分：
     # - manipulation_points：关键点在 3D 空间中的坐标（这里 index_list 指定使用哪些点）
     # - indices：对应点在点云中的索引
-    # - points_similarity：可操作性（affordance）或相似性特征，用于后续策略条件
+    # - points_similarity：每个点的可操作性（affordance）或相似性特征，用于后续策略条件
+    #   注意：index_list 中的索引是基于 GAM 训练时固定下来的，语义上对应衣服的关键部位
     manipulation_points, indices, points_similarity = env.model.get_manipulation_points(
         input_pcd=pcd,
         index_list=[957, 501, 1902, 448, 1196, 422],
@@ -528,6 +569,7 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, validation_flag, record_vi
     success = True
     # 使用 GAM 再次在当前点云上采样四个关键点，用于构造评估区域 boundary：
     # boundary = [min_x, max_x, min_y, max_y]
+    # 直观理解：用 4 个点确定一个“理想折叠区域”的矩形包围盒
     points, *_ = env.model.get_manipulation_points(pcd, [554, 1540, 1014, 1385])
     boundary = [points[0][0] - 0.05, points[1][0] + 0.05, points[3][1] - 0.1, points[2][1] + 0.1]
     # 获取折叠结束后的衣服点云
@@ -537,7 +579,7 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, validation_flag, record_vi
         real_time_watch=False,
     )
     # 使用 Position_Judge 中的 judge_pcd 函数判断折叠质量：
-    # 若在 boundary 区域内的点云分布满足阈值要求，则视为成功
+    # - 若在 boundary 区域内的点云分布满足阈值要求（覆盖度/致密度达到阈值），则视为成功
     success = judge_pcd(pcd_end, boundary, threshold=0.12)
     cprint(f"final result: {success}", color="green", on_color="on_green")
 

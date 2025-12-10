@@ -223,7 +223,8 @@ if __name__ == '__main__':
         observation_space = {
             "environment_point_cloud": (1024, 3),
             "garment_point_cloud": (1024, 3),
-            "points_affordance_feature": (1024, 2),
+            # points_affordance_feature 改为 4 维
+            "points_affordance_feature": (1024, 4),
             "agent_pos": (60,),
         }
 
