@@ -9,7 +9,7 @@ shape_meta: &shape_meta
       shape: [2048, 3]
       type: point_cloud
     points_affordance_feature:
-      shape: [2048, 2]
+      shape: [2048, 4]
       type/: point_cloud
     agent_pos:
       shape: [60]

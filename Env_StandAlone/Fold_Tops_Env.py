@@ -474,8 +474,8 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, record_video_flag, data_co
         angular_type="quat",
     )
     # 若开启数据采集，则使用顶部相机记录右袖整理完成后的环境状态
-    if data_collection_flag:
-        _capture_top_image("stage2_right_sleeve")
+    # if data_collection_flag:
+    #     _capture_top_image("stage2_right_sleeve")
     
     # --------------------- bottom-top --------------------- #    
     # 阶段 3：双手同时从下摆往上折
@@ -582,36 +582,106 @@ def FoldTops(pos, ori, usd_path, ground_material_usd, record_video_flag, data_co
             env.env_camera.get_rgb_graph(save_or_not=True,save_path=get_unique_filename("Data/Fold_Tops/final_state_pic/img",".png"))
 
    
-if __name__=="__main__":
+if __name__ == "__main__":
     
-    args=parse_args_record()
-    
-    # initial setting
+    args = parse_args_record()
+
+    # ---------------------- #
+    # 1. 决定初始位姿 & 地面材质（单次运行）
+    # ---------------------- #
+    # 默认固定一个初始位姿和默认地面
     pos = np.array([0.0, 0.8, 0.2])
     ori = np.array([0.0, 0.0, 0.0])
-    usd_path = None
-    
-    if args.garment_random_flag:
+    ground_material_usd = args.ground_material_usd if hasattr(args, "ground_material_usd") else None
+
+    # 如果希望环境随机：
+    # - 衣服初始位置随机（桌面上的 x, y）
+    # - 若未显式指定 ground_material_usd，则从 Floor 材质库中随机选一块地面贴图
+    if args.env_random_flag:
         np.random.seed(int(time.time()))
-        x = np.random.uniform(-0.1, 0.1) # changeable
-        y = np.random.uniform(0.7, 0.9) # changeable
-        pos = np.array([x,y,0.0])
-        ori = np.array([0.0, 0.0, 0.0])
+        # 随机初始位姿
+        x = np.random.uniform(-0.1, 0.1)  # changeable
+        y = np.random.uniform(0.7, 0.9)   # changeable
+        pos = np.array([x, y, 0.0])
+
+        # 随机地面材质（仅当用户没有在命令行里指定 ground_material_usd 时）
+        if ground_material_usd is None:
+            floor_dir = os.path.join(os.getcwd(), "Assets/Material/Floor")
+            try:
+                candidates = [
+                    os.path.join(floor_dir, f)
+                    for f in os.listdir(floor_dir)
+                    if f.endswith(".usd")
+                ]
+                if len(candidates) > 0:
+                    ground_material_usd = np.random.choice(candidates)
+            except Exception as e:
+                cprint(f"[Warning] Failed to randomize ground material: {e}", "yellow")
+
+    # ---------------------- #
+    # 2. 决定本次要用哪一件衣服（只跑 1 次）
+    # ---------------------- #
+    usd_path = None
+
+    # 优先级 1：命令行直接指定 --usd_path
+    if hasattr(args, "usd_path") and args.usd_path is not None:
+        # 既支持绝对路径，也支持相对于工程根目录的相对路径
+        if os.path.isabs(args.usd_path):
+            usd_path = args.usd_path
+        else:
+            usd_path = os.path.join(os.getcwd(), args.usd_path)
+
+    # 优先级 2：如果有 garment_random_flag（用于验证脚本的别名），且被置为 True，
+    #           则从训练集列表中随机选 1 件（在当前记录脚本中通常不用）
+    elif hasattr(args, "garment_random_flag") and args.garment_random_flag:
         Base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        assets_lists = os.path.join(Base_dir,"Model_HALO/GAM/checkpoints/Tops_LongSleeve/assets_training_list.txt")
+        assets_lists = os.path.join(
+            Base_dir,
+            "Model_HALO/GAM/checkpoints/Tops_LongSleeve/assets_train.txt",
+        )
         assets_list = []
-        with open(assets_lists,"r",encoding='utf-8') as f:
+        with open(assets_lists, "r", encoding="utf-8") as f:
             for line in f:
-                clean_line = line.rstrip('\n')
-                assets_list.append(clean_line)
-        usd_path=os.getcwd() + "/" + np.random.choice(assets_list)
-    
-    FoldTops(pos, ori, usd_path, args.ground_material_usd, args.data_collection_flag, args.record_video_flag)
+                clean_line = line.strip()
+                if clean_line:
+                    assets_list.append(clean_line)
+
+        if len(assets_list) > 0:
+            np.random.seed(int(time.time()))
+            garment_rel_path = np.random.choice(assets_list)
+            usd_path = os.path.join(os.getcwd(), garment_rel_path)
+
+    # 否则：保持 usd_path = None，使用 FoldTops_Env 中的默认那件长袖上衣
+
+    # ---------------------- #
+    # 3. 单次运行 FoldTops
+    # ---------------------- #
+    try:
+        FoldTops(
+            pos,
+            ori,
+            usd_path,
+            ground_material_usd,
+            args.data_collection_flag,
+            args.record_video_flag,
+        )
+    except ValueError as e:
+        # 专门捕获 furthest_point_sampling 的「空点云」报错：
+        # 把这一轮视为无效轮次，打印提示但不让程序崩溃。
+        if "furthest_point_sampling 收到空点云" in str(e):
+            cprint(
+                "[Warning] 本轮 FoldTops 因上游返回空点云而被跳过（已安全结束本轮）。",
+                "yellow",
+            )
+        else:
+            # 其它 ValueError 依旧抛出，避免掩盖真正的 bug
+            raise
 
     if args.data_collection_flag:
+        # 数据收集模式：当前这条轨迹跑完就直接关闭 app
         simulation_app.close()
     else:
+        # 交互 / 可视化模式：保持仿真窗口，直到用户手动关闭
         while simulation_app.is_running():
             simulation_app.update()
-    
-simulation_app.close()
+        simulation_app.close()

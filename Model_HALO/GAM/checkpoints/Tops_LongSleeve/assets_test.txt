@@ -1,0 +1,7 @@
+Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top608/TCLC_Top608_obj.usd
+Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket157/TCLC_Jacket157_obj.usd
+Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_002/TCLC_002_obj.usd
+Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Normal_Model_058/TCLC_Normal_Model_058_obj.usd
+Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_023/TCLC_model2_023_obj.usd
+
+

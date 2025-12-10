@@ -20,6 +20,7 @@ from torch.utils.data import DataLoader
 
 import pdb
 
+# 为了从项目根目录运行脚本时，能够正确 import 到本仓库下的模块
 sys.path.append('Model_HALO/SADP_G')
 
 from structure_aware_diffusion_policy_garment.common.checkpoint_util import TopKCheckpointManager
@@ -34,22 +35,36 @@ from hydra.core.hydra_config import HydraConfig
 OmegaConf.register_new_resolver("eval", eval, replace=True)
 
 class TrainSADPGWorkspace:
+    """
+    SADP_G 训练工作空间（workspace），负责：
+    1. 根据 Hydra 配置构建模型 / 数据集 / 优化器 / EMA / 日志等；
+    2. 管理训练状态（epoch / global_step）；
+    3. 执行训练、验证、保存 checkpoint；
+    4. 提供从 checkpoint 恢复 policy 和 env_runner 的接口。
+    """
     include_keys = ["global_step", "epoch"]
     exclude_keys = tuple()
 
     def __init__(self, cfg: OmegaConf, output_dir=None):
+        """
+        初始化训练工作空间。
+
+        参数：
+        - cfg: Hydra 加载的配置对象（包含 training / policy / task 等全部信息）
+        - output_dir: Hydra 的输出目录（可选，一般由 Hydra 自动设置）
+        """
         self.cfg = cfg
         self._output_dir = output_dir
         self._saving_thread = None
 
-        # set seed
+        # ========== 设置随机种子，保证实验可复现 ==========
         seed = cfg.training.seed
         torch.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)
 
         print("SADP_G:", os.getcwd())
-        # configure model
+        # ========== 根据配置实例化 policy 模型 ==========
         self.model: SADP_G = hydra.utils.instantiate(cfg.policy)
 
         self.ema_model: SADP_G = None
@@ -59,16 +74,22 @@ class TrainSADPGWorkspace:
             except:  # minkowski engine could not be copied. recreate it
                 self.ema_model = hydra.utils.instantiate(cfg.policy)
 
-        # configure training state
+        # ========== 构建优化器 ==========
         self.optimizer = hydra.utils.instantiate(
             cfg.optimizer, params=self.model.parameters()
         )
 
-        # configure training state
+        # ========== 初始化训练状态计数器 ==========
         self.global_step = 0
         self.epoch = 0
 
     def run(self):
+        """
+        主训练入口：
+        - 初始化 WandB / 数据集 / DataLoader / 学习率调度 / EMA 等模块；
+        - 按 epoch 执行训练与验证；
+        - 按配置周期保存 checkpoint。
+        """
         cfg = copy.deepcopy(self.cfg)
 
         if cfg.logging.mode == "online":
@@ -95,14 +116,14 @@ class TrainSADPGWorkspace:
         RUN_ROLLOUT = False
         RUN_VALIDATION = True  # reduce time cost
 
-        # resume training
+        # ========== 如果需要，从 checkpoint 恢复训练 ==========
         if cfg.training.resume:
             lastest_ckpt_path = self.get_checkpoint_path()
             if lastest_ckpt_path.is_file():
                 print(f"Resuming from checkpoint {lastest_ckpt_path}")
                 self.load_checkpoint(path=lastest_ckpt_path)
 
-        # configure dataset
+        # ========== 构建训练数据集和 DataLoader ==========
         dataset: BaseDataset
         dataset = hydra.utils.instantiate(cfg.task.dataset)
 
@@ -112,15 +133,16 @@ class TrainSADPGWorkspace:
         train_dataloader = DataLoader(dataset, **cfg.dataloader)
         normalizer = dataset.get_normalizer()
 
-        # configure validation dataset
+        # ========== 构建验证数据集和 DataLoader ==========
         val_dataset = dataset.get_validation_dataset()
         val_dataloader = DataLoader(val_dataset, **cfg.val_dataloader)
 
+        # 将归一化器注册到模型与 EMA 模型中，方便统一数据前/后处理
         self.model.set_normalizer(normalizer)
         if cfg.training.use_ema:
             self.ema_model.set_normalizer(normalizer)
 
-        # configure lr scheduler
+        # ========== 学习率调度器 ==========
         lr_scheduler = get_scheduler(
             cfg.training.lr_scheduler,
             optimizer=self.optimizer,
@@ -132,7 +154,7 @@ class TrainSADPGWorkspace:
             last_epoch=self.global_step - 1,
         )
 
-        # configure ema
+        # ========== EMA 管理器 ==========
         ema: EMAModel = None
         if cfg.training.use_ema:
             ema = hydra.utils.instantiate(cfg.ema, model=self.ema_model)
@@ -157,23 +179,23 @@ class TrainSADPGWorkspace:
                 }
             )
 
-        # configure checkpoint
+        # ========== Top-K checkpoint 管理器（本文件中主要用 save_checkpoint 手动保存） ==========
         topk_manager = TopKCheckpointManager(
             save_dir=os.path.join(self.output_dir, "checkpoints"), **cfg.checkpoint.topk
         )
 
-        # device transfer
+        # ========== 将模型与优化器移动到目标设备（CPU / GPU） ==========
         device = torch.device(cfg.training.device)
         self.model.to(device)
         if self.ema_model is not None:
             self.ema_model.to(device)
         optimizer_to(self.optimizer, device)
 
-        # save batch for sampling
+        # 保存一份训练 batch，用于后续可视化或采样（如需要）
         train_sampling_batch = None
         checkpoint_num = 1
 
-        # training loop
+        # ========== 主训练循环 ==========
         log_path = os.path.join(self.output_dir, "logs.json.txt")
         for local_epoch_idx in range(cfg.training.num_epochs):
             step_log = dict()
@@ -187,12 +209,12 @@ class TrainSADPGWorkspace:
             ) as tepoch:
                 for batch_idx, batch in enumerate(tepoch):
                     t1 = time.time()
-                    # device transfer
+                    # 将 batch 搬到目标 device（支持非阻塞）
                     batch = dict_apply(batch, lambda x: x.to(device, non_blocking=True))
                     if train_sampling_batch is None:
                         train_sampling_batch = batch
 
-                    # compute loss
+                    # --------- 计算损失并反向传播（支持梯度累积） ---------
                     t1_1 = time.time()
                     raw_loss, loss_dict = self.model.compute_loss(batch)
                     loss = raw_loss / cfg.training.gradient_accumulate_every
@@ -200,17 +222,17 @@ class TrainSADPGWorkspace:
 
                     t1_2 = time.time()
 
-                    # step optimizer
+                    # --------- 按梯度累积步数进行一次优化器更新 ---------
                     if self.global_step % cfg.training.gradient_accumulate_every == 0:
                         self.optimizer.step()
                         self.optimizer.zero_grad()
                         lr_scheduler.step()
                     t1_3 = time.time()
-                    # update ema
+                    # --------- EMA 更新（如果启用） ---------
                     if cfg.training.use_ema:
                         ema.step(self.model)
                     t1_4 = time.time()
-                    # logging
+                    # --------- 记录日志信息（loss / lr 等） ---------
                     raw_loss_cpu = raw_loss.item()
                     tepoch.set_postfix(loss=raw_loss_cpu, refresh=False)
                     train_losses.append(raw_loss_cpu)
@@ -243,8 +265,7 @@ class TrainSADPGWorkspace:
                     ):
                         break
 
-            # at the end of each epoch
-            # replace train_loss with epoch average
+            # epoch 结束时，用该 epoch 的平均训练 loss 作为最终指标
             train_loss = np.mean(train_losses)
             step_log["train_loss"] = train_loss
 
@@ -280,7 +301,7 @@ class TrainSADPGWorkspace:
                         # log epoch average validation loss
                         step_log["val_loss"] = val_loss
 
-            # checkpoint
+            # ========== 按频率保存 checkpoint ==========
             if (
                 (self.epoch + 1) % cfg.training.checkpoint_every
             ) == 0 and cfg.checkpoint.save_ckpt:
@@ -303,8 +324,7 @@ class TrainSADPGWorkspace:
             # ========= eval end for this epoch ==========
             policy.train()
 
-            # end of epoch
-            # log of last step is combined with validation and rollout
+            # 记录本 epoch 最后一步（包含验证指标）的日志
             if WANDB:
                 wandb_run.log(step_log, step=self.global_step)
             self.global_step += 1
@@ -312,6 +332,13 @@ class TrainSADPGWorkspace:
             del step_log
 
     def get_policy_and_runner(self, cfg, checkpoint_num=3000, task_name="Hang_Tops_stage_1"):
+        """
+        根据给定的 checkpoint 编号与任务名，加载 policy 与环境 runner。
+
+        返回：
+        - policy: 已经切换到 eval + cuda 的策略网络（若开启 EMA，则返回 EMA 模型）
+        - env_runner: 用于 roll-out 的环境 runner
+        """
         # load the latest checkpoint
         env_runner: BaseRunner
         env_runner = hydra.utils.instantiate(
@@ -343,6 +370,11 @@ class TrainSADPGWorkspace:
 
     @property
     def output_dir(self):
+        """
+        当前实验的输出目录。
+
+        优先使用初始化时传入的 output_dir，否则从 HydraConfig 中读取。
+        """
         output_dir = self._output_dir
         if output_dir is None:
             output_dir = HydraConfig.get().runtime.output_dir
@@ -356,6 +388,21 @@ class TrainSADPGWorkspace:
         include_keys=None,
         use_thread=False,
     ):
+        """
+        保存 checkpoint。
+
+        保存内容包括：
+        - cfg：完整配置；
+        - state_dicts：所有包含 state_dict 的模块（模型、优化器、EMA 等）；
+        - pickles：额外通过 dill 序列化的对象（例如 output_dir）。
+
+        参数：
+        - path: 指定保存路径；若为 None，则根据 output_dir 与 tag 自动生成路径；
+        - tag: checkpoint 标签名（默认 "latest"）；
+        - exclude_keys: 不需要保存 state_dict 的 key（黑名单）；
+        - include_keys: 需要以 pickle 形式保存的属性（白名单）；
+        - use_thread: 是否在子线程中异步保存（避免阻塞训练）。
+        """
         print("saved in ", path)
         if path is None:
             path = pathlib.Path(self.output_dir).joinpath("checkpoints", f"{tag}.ckpt")
@@ -367,6 +414,10 @@ class TrainSADPGWorkspace:
             include_keys = tuple(self.include_keys) + ("_output_dir",)
 
         path.parent.mkdir(parents=False, exist_ok=True)
+        # payload 结构：
+        # - cfg: 实验配置
+        # - state_dicts: 所有可用 state_dict 描述的模块
+        # - pickles: 其它通过 dill 序列化的对象
         payload = {"cfg": self.cfg, "state_dicts": dict(), "pickles": dict()}
 
         for key, value in self.__dict__.items():
@@ -392,6 +443,14 @@ class TrainSADPGWorkspace:
         return str(path.absolute())
 
     def get_checkpoint_path(self, tag="latest"):
+        """
+        根据 tag 获取 checkpoint 文件路径。
+
+        支持：
+        - "latest": 直接返回 latest.ckpt；
+        - "best": 根据文件名里的 test_mean_score 选出最优 ckpt；
+        - 其它 tag：目前未实现。
+        """
         if tag == "latest":
             return pathlib.Path(self.output_dir).joinpath("checkpoints", f"{tag}.ckpt")
         elif tag == "best":
@@ -413,6 +472,14 @@ class TrainSADPGWorkspace:
             raise NotImplementedError(f"tag {tag} not implemented")
 
     def load_payload(self, payload, exclude_keys=None, include_keys=None, **kwargs):
+        """
+        将 payload 中的内容加载回当前 workspace。
+
+        参数：
+        - payload: save_checkpoint 生成的字典；
+        - exclude_keys: 从 state_dicts 中跳过的 key；
+        - include_keys: 从 pickles 中需要反序列化回来的 key。
+        """
         if exclude_keys is None:
             exclude_keys = tuple()
         if include_keys is None:
@@ -428,6 +495,18 @@ class TrainSADPGWorkspace:
     def load_checkpoint(
         self, path=None, tag="latest", exclude_keys=None, include_keys=None, **kwargs
     ):
+        """
+        从 checkpoint 文件中恢复 workspace 状态。
+
+        参数：
+        - path: checkpoint 路径；若为 None，则通过 tag 自动推断；
+        - tag: "latest" 或 "best"；
+        - exclude_keys / include_keys: 传递给 load_payload 的过滤条件；
+        - kwargs: 透传给各模块的 load_state_dict（例如 strict=False）。
+
+        返回：
+        - payload: 从磁盘加载的原始字典。
+        """
         if path is None:
             path = self.get_checkpoint_path(tag=tag)
         else:
@@ -440,6 +519,14 @@ class TrainSADPGWorkspace:
     def create_from_checkpoint(
         cls, path, exclude_keys=None, include_keys=None, **kwargs
     ):
+        """
+        通过已有 checkpoint 创建一个新的 TrainSADPGWorkspace 实例。
+
+        步骤：
+        1. 从磁盘读取 payload；
+        2. 用 payload["cfg"] 创建 workspace；
+        3. 调用 load_payload 恢复各模块状态。
+        """
         payload = torch.load(open(path, "rb"), pickle_module=dill)
         instance = cls(payload["cfg"])
         instance.load_payload(
@@ -456,6 +543,8 @@ class TrainSADPGWorkspace:
 
         However, loading a snapshot assumes the code stays exactly the same.
         Use save_checkpoint for long-term storage.
+        （注：snapshot 直接序列化整个 workspace 对象，适合短期实验快速中断与恢复，
+        若代码发生改动，老的 snapshot 可能无法再正确加载。）
         """
         path = pathlib.Path(self.output_dir).joinpath("snapshots", f"{tag}.pkl")
         path.parent.mkdir(parents=False, exist_ok=True)
@@ -487,6 +576,14 @@ def _copy_to_cpu(x):
     ),
 )
 def main(cfg):
+    """
+    Hydra 程序入口：
+    - 根据 config_path 指向的目录加载 YAML 配置；
+    - 使用 cfg 构造 TrainSADPGWorkspace 并启动训练。
+
+    使用示例（在项目根目录）：
+    python Model_HALO/SADP_G/train.py task=Fold_Tops_stage_1 training.device=cuda:0
+    """
     workspace = TrainSADPGWorkspace(cfg)
     workspace.run()
 
