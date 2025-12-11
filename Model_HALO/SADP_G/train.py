@@ -92,10 +92,11 @@ class TrainSADPGWorkspace:
         """
         cfg = copy.deepcopy(self.cfg)
 
-        if cfg.logging.mode == "online":
-            WANDB = True
-        else:
-            WANDB = False
+        # if cfg.logging.mode == "online":
+        #     WANDB = True
+        # else:
+        #     WANDB = False
+        WANDB = True
 
         if cfg.training.debug:
             cfg.training.num_epochs = 5
