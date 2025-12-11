@@ -96,5 +96,27 @@ def parse_args_val():
     parser.add_argument("--stage_1_checkpoint_num", type=str2int, default=1500, help="Stage 1 checkpoint number")
     parser.add_argument("--stage_2_checkpoint_num", type=str2int, default=1500, help="Stage 2 checkpoint number")
     parser.add_argument("--stage_3_checkpoint_num", type=str2int, default=1500, help="Stage 3 checkpoint number")
+
+    # Debug 开关：用于保存 VLM 输出与可视化结果
+    parser.add_argument(
+        "--debug",
+        type=str2bool,
+        default=False,
+        help="enable debug mode to save VLM outputs and visualization figures",
+    )
+
+    # VLM 相关参数：通过命令行传入，而不是依赖环境变量
+    parser.add_argument(
+        "--vlm_base_url",
+        type=str,
+        default="http://127.0.0.1:8001/v1",
+        help="base url of the VLM service (OpenAI-compatible endpoint)",
+    )
+    parser.add_argument(
+        "--vlm_model_name",
+        type=str,
+        required=True,
+        help="model name or checkpoint path used by VLM",
+    )
     
     return parser.parse_args()
