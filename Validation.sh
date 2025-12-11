@@ -38,31 +38,31 @@ training_data_num=$3
 # 二、根据任务类型决定需要的   #
 #     checkpoint 阶段数量      #
 #==============================#
-if [[ "$task_name" == "Fold_Dress" || "$task_name" == "Fold_Tops" ]]; then
-    # 三阶段任务：需要手动输入 1/2/3 阶段的 checkpoint 序号
-    # 这里需要修改成统一的checkpoint目录
-    read -p "Please Input <stage_1_checkpoint_num>: " stage_1_checkpoint_num
-    read -p "Please Input <stage_2_checkpoint_num>: " stage_2_checkpoint_num
-    read -p "Please Input <stage_3_checkpoint_num>: " stage_3_checkpoint_num
-elif [[ "$task_name" == "Fling_Dress" || "$task_name" == "Fling_Tops" || "$task_name" == "Fold_Trousers" ]]; then
-    # 二阶段任务：只需要 1/2 阶段，第三阶段恒为 0（代表无）
-    read -p "Please Input <stage_1_checkpoint_num>: " stage_1_checkpoint_num
-    read -p "Please Input <stage_2_checkpoint_num>: " stage_2_checkpoint_num
-    stage_3_checkpoint_num=0
-else
-    # 其他任务：只需要 1 个阶段，2/3 阶段一律置 0
-    read -p "Please Input <stage_1_checkpoint_num>: " stage_1_checkpoint_num
-    stage_2_checkpoint_num=0
-    stage_3_checkpoint_num=0
-fi
+# if [[ "$task_name" == "Fold_Dress" || "$task_name" == "Fold_Tops" ]]; then
+#     # 三阶段任务：需要手动输入 1/2/3 阶段的 checkpoint 序号
+#     # 这里需要修改成统一的checkpoint目录
+#     read -p "Please Input <stage_1_checkpoint_num>: " stage_1_checkpoint_num
+#     read -p "Please Input <stage_2_checkpoint_num>: " stage_2_checkpoint_num
+#     read -p "Please Input <stage_3_checkpoint_num>: " stage_3_checkpoint_num
+# elif [[ "$task_name" == "Fling_Dress" || "$task_name" == "Fling_Tops" || "$task_name" == "Fold_Trousers" ]]; then
+#     # 二阶段任务：只需要 1/2 阶段，第三阶段恒为 0（代表无）
+#     read -p "Please Input <stage_1_checkpoint_num>: " stage_1_checkpoint_num
+#     read -p "Please Input <stage_2_checkpoint_num>: " stage_2_checkpoint_num
+#     stage_3_checkpoint_num=0
+# else
+#     # 其他任务：只需要 1 个阶段，2/3 阶段一律置 0
+#     read -p "Please Input <stage_1_checkpoint_num>: " stage_1_checkpoint_num
+#     stage_2_checkpoint_num=0
+#     stage_3_checkpoint_num=0
+# fi
 
 #==============================#
 # 二.1、VLM 与 debug 相关参数  #
 #==============================#
 # 所有使用 parse_args_val 的验证脚本现在都需要 --vlm_model_name
-read -p "Please Input <vlm_model_name> (for VLM): " vlm_model_name
+#read -p "Please Input <vlm_model_name> (for VLM): " vlm_model_name
 # 是否开启 debug 模式（保存 VLM 输出、RGB+bbox、pcd+feature 可视化）
-read -p "Enable debug mode? (True/False, default False): " debug_flag
+#read -p "Enable debug mode? (True/False, default False): " debug_flag
 if [[ -z "$debug_flag" ]]; then
     debug_flag=False
 fi
@@ -112,18 +112,17 @@ print_progress() {
 while [ "$current_num" -lt "$validation_num" ]; do
     print_progress "$current_num" "$validation_num" "$task_name"
 
-    $ISAAC_PATH Env_Validation/${task_name}_${type}.py \
+    $ISAAC_PATH Env_Validation/Fold_Tops_HALO.py \
         --env_random_flag True \
         --garment_random_flag True \
         --record_video_flag True \
         --validation_flag True \
         --training_data_num "$training_data_num" \
-        --stage_1_checkpoint_num "$stage_1_checkpoint_num" \
-        --stage_2_checkpoint_num "$stage_2_checkpoint_num" \
-        --stage_3_checkpoint_num "$stage_3_checkpoint_num" \
-        --vlm_model_name "$vlm_model_name" \
-        --debug "$debug_flag" \
-        > /dev/null 2>&1
+        --stage_1_checkpoint_num 3000 \
+        --stage_2_checkpoint_num 0 \
+        --stage_3_checkpoint_num 0 \
+        --debug True \
+        --vlm_model_name "/share_data/yanruilin/qwen3vl_full_sft_cloth_sim"
 
     current_num=$(ls "${base_dir}/final_state_pic" | wc -l)
     sleep 5

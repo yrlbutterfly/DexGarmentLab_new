@@ -14,7 +14,7 @@ class SADP_G:
     def __init__(self, task_name, checkpoint_num, data_num, device="cuda:0") -> None:
         # load checkpoint
         # 与 train.py 中的保存路径保持一致：/share_data/yanruilin/checkpoints/Fold_Tops/...
-        checkpoint = f'/share_data/yanruilin/checkpoints/Fold_Tops/{task_name}_{data_num}/{checkpoint_num}.ckpt'
+        checkpoint = f'checkpoints/{task_name}_{data_num}/{checkpoint_num}.ckpt'
         payload = torch.load(open('./Model_HALO/SADP_G/'+checkpoint, 'rb'), pickle_module=dill)
         cfg = payload['cfg']
         self.policy, self.env_runner = self.get_policy_and_runner(cfg, checkpoint_num, task_name+"_"+str(data_num))

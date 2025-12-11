@@ -1,7 +1,7 @@
 from isaacsim import SimulationApp
 # 创建 Isaac Sim 仿真应用，headless=True 表示使用无界面模式（适合批量验证 / 集群）
 # - 若需要在本地可视化调试，可以改为 headless=False；但服务器/集群上建议保持为 True
-simulation_app = SimulationApp({"headless": True})
+simulation_app = SimulationApp({"headless": False})
 
 # ------------------------- #
 #   加载 Python 外部依赖    #
@@ -52,6 +52,7 @@ from Env_Config.Robot.BimanualDex_Ur10e import Bimanual_Ur10e
 from Env_Config.Camera.Recording_Camera import Recording_Camera
 from Env_Config.Room.Real_Ground import Real_Ground
 from Env_Config.Utils_Project.Code_Tools import get_unique_filename, normalize_columns
+from Env_Config.Utils_Project.Point_Cloud_Manip import compute_similarity
 from Env_Config.Utils_Project.Parse import parse_args_val
 from Env_Config.Utils_Project.Position_Judge import judge_pcd
 from Env_Config.Room.Object_Tools import set_prim_visible_group, delete_prim_group
@@ -276,6 +277,7 @@ def _debug_save_vlm_rgb_with_bbox(
     # 转成 BGR，方便用 OpenCV 可视化
     img = rgb.astype("uint8").copy()
     img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    img_h, img_w = img_bgr.shape[:2]
 
     for item in vlm_points:
         if not isinstance(item, dict):
@@ -289,7 +291,12 @@ def _debug_save_vlm_rgb_with_bbox(
             or len(bbox) != 4
         ):
             continue
-        x_min, y_min, x_max, y_max = [int(v) for v in bbox]
+        # VLM 输出的 bbox 为 0~1000 的相对坐标，这里同样需要根据图像尺寸转换为像素坐标
+        x_min_rel, y_min_rel, x_max_rel, y_max_rel = [float(v) for v in bbox]
+        x_min = int(x_min_rel / 1000.0 * img_w)
+        x_max = int(x_max_rel / 1000.0 * img_w)
+        y_min = int(y_min_rel / 1000.0 * img_h)
+        y_max = int(y_max_rel / 1000.0 * img_h)
         # 画 bbox
         cv2.rectangle(
             img_bgr,
@@ -459,8 +466,8 @@ def _gaussian_field_for_bbox(
     mask: np.ndarray,
     pcd: np.ndarray,
     bbox: List[float],
-    sigma_scale: float = 1.0,
-    outside_decay: float = 0.3,
+    sigma: float = 0.1,
+    outside_decay: float = 0.7,
 ) -> np.ndarray:
     """
     以 bbox 对应区域在点云上的 3D 质心为高斯核中心，在 3D 空间中对所有点生成一维权重：
@@ -484,28 +491,14 @@ def _gaussian_field_for_bbox(
     # 以 bbox 内所有 3D 点的质心作为该 keypoint 在点云上的“语义中心”
     center_3d = pcd[inside_2d].mean(axis=0)
 
-    # 计算每个点到中心的 3D 欧氏距离
-    diff = pcd - center_3d[None, :]
-    dist = np.linalg.norm(diff, axis=1)
+    # 使用与 Fold_Tops_Env 中 compute_similarity 完全一致的高斯相似度形式：
+    # similarity = exp(- (dist^2) / (2 * sigma^2))
+    sim_col = compute_similarity(pcd, center_3d, sigma=sigma)  # (N, 1)
+    field = sim_col.reshape(-1).astype(np.float32)
 
-    # 使用 bbox 内点的距离分布来估计 3D 高斯的尺度
-    inside_dist = dist[inside_2d]
-    # 为了稳健，可以使用均值或 75 分位数，这里采用均值 * sigma_scale
-    sigma_3d = float(np.mean(inside_dist) * max(sigma_scale, 1e-3))
-    sigma_3d = max(sigma_3d, 1e-4)
-
-    norm_d = dist / sigma_3d
-    field = np.exp(-0.5 * norm_d * norm_d).astype(np.float32)
-
-    # 不可见的点直接置 0
-    field *= mask.astype(np.float32)
-
-    # 对 bbox 外部但仍可见的点再额外做一次衰减，使语义更加集中在 bbox 对应的区域
-    outside = (
-        ((us < x_min) | (us > x_max) | (vs < y_min) | (vs > y_max))
-        & mask
-    )
-    field[outside] *= outside_decay
+    # 为了在 VLM 场景下仍然利用 bbox 约束范围，
+    # 对于没有有效投影（mask=False）的点，做一次额外衰减；其余保持与原 compute_similarity 一致
+    field[~mask] *= outside_decay
 
     return field
 
@@ -523,6 +516,8 @@ def build_points_affordance_feature_from_vlm(
     返回形状为 (N_points, 4) 的列归一化矩阵。
     """
     # 1) 建立 label -> bbox 的映射
+    # 注意：当前 VLM 输出的 bbox 为 0~1000 的相对坐标，需要先根据图像尺寸转换为像素坐标
+    img_h, img_w = rgb.shape[:2]
     label_to_bbox: Dict[str, List[float]] = {}
     if isinstance(points_list, list):
         for item in points_list:
@@ -537,7 +532,14 @@ def build_points_affordance_feature_from_vlm(
                 or len(bbox) != 4
             ):
                 continue
-            label_to_bbox[str(label)] = [float(b) for b in bbox]
+            # VLM 返回的 bbox 坐标范围为 [0, 1000]，在水平方向和竖直方向上分别线性映射到 [0, img_w] / [0, img_h]
+            # [x_min, y_min, x_max, y_max]（相对坐标） -> 像素坐标
+            x_min_rel, y_min_rel, x_max_rel, y_max_rel = [float(b) for b in bbox]
+            x_min = x_min_rel / 1000.0 * img_w
+            x_max = x_max_rel / 1000.0 * img_w
+            y_min = y_min_rel / 1000.0 * img_h
+            y_max = y_max_rel / 1000.0 * img_h
+            label_to_bbox[str(label)] = [x_min, y_min, x_max, y_max]
 
     # 2) 将点云投影到像素平面
     us, vs, mask = _project_pcd_to_pixels(env, rgb, pcd)
@@ -694,10 +696,11 @@ class FoldTops_Env(BaseEnv):
         # ----------------------------- #
         #   加载统一策略模型 SADP_G     #
         # ----------------------------- #
-        # 使用单个策略模型统一处理所有子任务；这里沿用 stage_1_checkpoint_num 作为统一模型的 ckpt 编号，
-        # 以保持命令行接口兼容，stage_2/3_checkpoint_num 不再在本脚本中使用。
+        # 这里与当前提供的 checkpoint 目录保持一致：
+        #   Model_HALO/SADP_G/checkpoints/Fold_Tops_stage_1_2_3_${training_data_num}/${stage_1_checkpoint_num}.ckpt
+        # 如需使用真正的统一策略模型，可将 task_name 改回 "Fold_Tops_unified"
         self.sadp_g = SADP_G(
-            task_name="Fold_Tops_unified",
+            task_name="Fold_Tops",
             data_num=training_data_num,
             checkpoint_num=stage_1_checkpoint_num,
         )
@@ -1076,7 +1079,8 @@ if __name__=="__main__":
                 clean_line = line.rstrip('\n')
                 assets_list.append(clean_line)
         # 随机选择一个衣服 usd 路径作为测试对象
-        usd_path = np.random.choice(assets_list)
+        #usd_path = np.random.choice(assets_list)
+        usd_path = "Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_014/TCLC_model2_014_obj.usd"
     
     # 启动一次完整的上衣折叠任务
     FoldTops(
