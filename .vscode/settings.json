@@ -1,4 +1,14 @@
 {
+  // Force this workspace to use the dedicated visualization environment.
+  // If Cursor/VSC doesn't immediately pick it up, run "Developer: Reload Window"
+  // and re-open the notebook.
+  "python.defaultInterpreterPath": "/home/admin01/anaconda3/envs/visualize/bin/python",
+
+  // Keep notebooks using local Jupyter by default (Cursor will still let you change it).
+  "jupyter.jupyterServerType": "local"
+}
+
+{
     "editor.rulers": [
         120
     ],

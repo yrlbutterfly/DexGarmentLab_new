@@ -1,5 +1,5 @@
-from isaacsim import SimulationApp
-simulation_app = SimulationApp({"headless": False})
+from Env_StandAlone.sim_app_config import create_sim_app
+simulation_app = create_sim_app(headless=False)
 
 # load external package
 import os

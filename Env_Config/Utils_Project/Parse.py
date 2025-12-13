@@ -105,6 +105,16 @@ def parse_args_val():
         help="enable debug mode to save VLM outputs and visualization figures",
     )
 
+    # Debug 输出目录（可选）：
+    # - 若不传，则默认写入 Data/Fold_Tops_Validation_HALO/debug/<timestamp>（由各任务脚本决定默认值）
+    # - 若传入绝对/相对路径，则写入 <debug_dir>/<timestamp>/
+    parser.add_argument(
+        "--debug_dir",
+        type=str,
+        default=None,
+        help="optional debug output root dir; debug files will be saved under <debug_dir>/<timestamp>/",
+    )
+
     # VLM 相关参数：通过命令行传入，而不是依赖环境变量
     parser.add_argument(
         "--vlm_base_url",

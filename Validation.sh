@@ -122,6 +122,7 @@ while [ "$current_num" -lt "$validation_num" ]; do
         --stage_2_checkpoint_num 0 \
         --stage_3_checkpoint_num 0 \
         --debug True \
+        --debug_dir "${base_dir}/debug" \
         --vlm_model_name "/share_data/yanruilin/qwen3vl_full_sft_cloth_sim"
 
     current_num=$(ls "${base_dir}/final_state_pic" | wc -l)

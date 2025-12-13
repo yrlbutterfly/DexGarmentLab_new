@@ -13,6 +13,8 @@ import numpy as np
 import open3d as o3d
 from termcolor import cprint
 import threading
+import atexit
+import signal
 import json
 import base64
 import re
@@ -321,6 +323,19 @@ def _debug_save_vlm_rgb_with_bbox(
     cv2.imwrite(save_path, img_bgr)
 
 
+def _debug_save_vlm_rgb_raw(
+    rgb: np.ndarray,
+    save_path: str,
+) -> None:
+    """
+    保存原始 RGB 图像（不画 bbox），用于对比 VLM 输入与可视化结果。
+    """
+    img = rgb.astype("uint8").copy()
+    img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    cv2.imwrite(save_path, img_bgr)
+
+
 def _debug_save_affordance_3d(
     pcd: np.ndarray,
     feat: np.ndarray,
@@ -474,22 +489,10 @@ def _gaussian_field_for_bbox(
     - bbox 内部对应的 3D 点距离质心越近，权重越高；
     - bbox 外部对应的 3D 点在高斯衰减基础上再乘一个更小的系数（outside_decay）。
     """
-    x_min, y_min, x_max, y_max = bbox
-    # 先根据 2D bbox 选出在像素空间内的点，作为 3D 高斯中心与尺度的参考
-    inside_2d = (
-        (us >= x_min)
-        & (us <= x_max)
-        & (vs >= y_min)
-        & (vs <= y_max)
-        & mask
-    )
-
-    if not np.any(inside_2d):
+    center_3d = _center_3d_for_bbox(bbox=bbox, us=us, vs=vs, mask=mask, pcd=pcd)
+    if center_3d is None:
         # 若没有任何点落在该 bbox 内，则认为本次 keypoint 无法在点云上可靠定位，返回全 0
         return np.zeros(pcd.shape[0], dtype=np.float32)
-
-    # 以 bbox 内所有 3D 点的质心作为该 keypoint 在点云上的“语义中心”
-    center_3d = pcd[inside_2d].mean(axis=0)
 
     # 使用与 Fold_Tops_Env 中 compute_similarity 完全一致的高斯相似度形式：
     # similarity = exp(- (dist^2) / (2 * sigma^2))
@@ -501,6 +504,171 @@ def _gaussian_field_for_bbox(
     field[~mask] *= outside_decay
 
     return field
+
+
+def _label_to_bbox_px_map(
+    rgb: np.ndarray,
+    points_list: Optional[List[Dict[str, object]]],
+) -> Dict[str, List[float]]:
+    """
+    将 VLM 输出的 points_list（bbox 范围为 [0,1000] 的相对坐标）转换为像素坐标 bbox 映射：
+        label -> [x_min, y_min, x_max, y_max] (float, px)
+    """
+    img_h, img_w = rgb.shape[:2]
+    label_to_bbox: Dict[str, List[float]] = {}
+    if not isinstance(points_list, list):
+        return label_to_bbox
+    for item in points_list:
+        if not isinstance(item, dict):
+            continue
+        label = item.get("label")
+        bbox = item.get("bbox")
+        if (
+            label is None
+            or bbox is None
+            or not isinstance(bbox, (list, tuple))
+            or len(bbox) != 4
+        ):
+            continue
+        x_min_rel, y_min_rel, x_max_rel, y_max_rel = [float(b) for b in bbox]
+        x_min = x_min_rel / 1000.0 * img_w
+        x_max = x_max_rel / 1000.0 * img_w
+        y_min = y_min_rel / 1000.0 * img_h
+        y_max = y_max_rel / 1000.0 * img_h
+        label_to_bbox[str(label)] = [x_min, y_min, x_max, y_max]
+    return label_to_bbox
+
+
+def _center_3d_for_bbox(
+    bbox: List[float],
+    us: np.ndarray,
+    vs: np.ndarray,
+    mask: np.ndarray,
+    pcd: np.ndarray,
+) -> Optional[np.ndarray]:
+    """
+    给定像素坐标系下的 bbox：[x_min, y_min, x_max, y_max]（float, px），
+    在点云里找出投影落在 bbox 内且可见(mask=True)的点，并返回这些点的 3D 质心。
+    - 若 bbox 内无点则返回 None。
+    """
+    x_min, y_min, x_max, y_max = bbox
+    inside_2d = (
+        (us >= x_min)
+        & (us <= x_max)
+        & (vs >= y_min)
+        & (vs <= y_max)
+        & mask
+    )
+    if not np.any(inside_2d):
+        return None
+    return pcd[inside_2d].mean(axis=0)
+
+
+def _center_3d_for_label_from_bbox(
+    label_name: Optional[str],
+    label_to_bbox: Dict[str, List[float]],
+    us: np.ndarray,
+    vs: np.ndarray,
+    mask: np.ndarray,
+    pcd: np.ndarray,
+) -> Optional[np.ndarray]:
+    """
+    根据 label 对应的 2D bbox，在点云中找出投影落入 bbox 内的点，并返回它们的 3D 质心。
+    - 若 label 不存在 / bbox 缺失 / bbox 内无点，则返回 None。
+    """
+    if label_name is None:
+        return None
+    bbox = label_to_bbox.get(str(label_name))
+    if bbox is None:
+        return None
+    return _center_3d_for_bbox(bbox=bbox, us=us, vs=vs, mask=mask, pcd=pcd)
+
+
+def motion_plan_move_to_vlm_targets(
+    env,
+    rgb: np.ndarray,
+    pcd: np.ndarray,
+    plan_step: Dict[str, object],
+    points_list: Optional[List[Dict[str, object]]],
+    settle_steps: int = 20,
+) -> Dict[str, Optional[np.ndarray]]:
+    """
+    根据 VLM 输出的 plan_step（left/right from/to）与 points_list(bboxes)，
+    先用 motion planning（dense_step_action）把机械手移动到“from”对应 bbox 在点云上的 3D 质心。
+
+    返回：
+        {"left_from": np.ndarray|None, "right_from": np.ndarray|None}
+    """
+    label_to_bbox = _label_to_bbox_px_map(rgb, points_list)
+    us, vs, mask = _project_pcd_to_pixels(env, rgb, pcd)
+
+    left_cfg = plan_step.get("left", {}) if isinstance(plan_step, dict) else {}
+    right_cfg = plan_step.get("right", {}) if isinstance(plan_step, dict) else {}
+    left_from = left_cfg.get("from")
+    right_from = right_cfg.get("from")
+
+    left_from_center = _center_3d_for_label_from_bbox(
+        left_from, label_to_bbox, us, vs, mask, pcd
+    )
+    right_from_center = _center_3d_for_label_from_bbox(
+        right_from, label_to_bbox, us, vs, mask, pcd
+    )
+
+    # 与 origin 脚本保持一致的抓取前手部朝向（quat）
+    left_quat = np.array([0.579, -0.579, -0.406, 0.406])
+    right_quat = np.array([0.406, -0.406, -0.579, 0.579])
+
+    # 如果双手都有目标点，优先双臂同时 IK；否则单手移动
+    try:
+        if left_from_center is not None and right_from_center is not None:
+            env.bimanual_dex.dense_move_both_ik(
+                left_pos=left_from_center,
+                left_ori=left_quat,
+                right_pos=right_from_center,
+                right_ori=right_quat,
+            )
+        else:
+            if left_from_center is not None:
+                env.bimanual_dex.dexleft.dense_step_action(
+                    target_pos=left_from_center,
+                    target_ori=left_quat,
+                    angular_type="quat",
+                )
+            if right_from_center is not None:
+                env.bimanual_dex.dexright.dense_step_action(
+                    target_pos=right_from_center,
+                    target_ori=right_quat,
+                    angular_type="quat",
+                )
+    except Exception as e:
+        cprint(f"[WARNING] motion planning 移动到 VLM 目标点失败：{e}", "yellow")
+
+    for _ in range(int(settle_steps)):
+        env.step()
+
+    return {"left_from": left_from_center, "right_from": right_from_center}
+
+
+def motion_plan_reset_hands_home(env, settle_steps: int = 20) -> None:
+    """
+    将双手 reset 回固定 home pose（写死），用于每段 DP rollout 结束后回到初始状态。
+    """
+    left_quat = np.array([0.579, -0.579, -0.406, 0.406])
+    right_quat = np.array([0.406, -0.406, -0.579, 0.579])
+
+    env.bimanual_dex.dexleft.dense_step_action(
+        target_pos=np.array([-0.6, 0.8, 0.5]),
+        target_ori=left_quat,
+        angular_type="quat",
+    )
+    env.bimanual_dex.dexright.dense_step_action(
+        target_pos=np.array([0.6, 0.8, 0.5]),
+        target_ori=right_quat,
+        angular_type="quat",
+    )
+
+    for _ in range(int(settle_steps)):
+        env.step()
 
 
 def build_points_affordance_feature_from_vlm(
@@ -517,29 +685,7 @@ def build_points_affordance_feature_from_vlm(
     """
     # 1) 建立 label -> bbox 的映射
     # 注意：当前 VLM 输出的 bbox 为 0~1000 的相对坐标，需要先根据图像尺寸转换为像素坐标
-    img_h, img_w = rgb.shape[:2]
-    label_to_bbox: Dict[str, List[float]] = {}
-    if isinstance(points_list, list):
-        for item in points_list:
-            if not isinstance(item, dict):
-                continue
-            label = item.get("label")
-            bbox = item.get("bbox")
-            if (
-                label is None
-                or bbox is None
-                or not isinstance(bbox, (list, tuple))
-                or len(bbox) != 4
-            ):
-                continue
-            # VLM 返回的 bbox 坐标范围为 [0, 1000]，在水平方向和竖直方向上分别线性映射到 [0, img_w] / [0, img_h]
-            # [x_min, y_min, x_max, y_max]（相对坐标） -> 像素坐标
-            x_min_rel, y_min_rel, x_max_rel, y_max_rel = [float(b) for b in bbox]
-            x_min = x_min_rel / 1000.0 * img_w
-            x_max = x_max_rel / 1000.0 * img_w
-            y_min = y_min_rel / 1000.0 * img_h
-            y_max = y_max_rel / 1000.0 * img_h
-            label_to_bbox[str(label)] = [x_min, y_min, x_max, y_max]
+    label_to_bbox = _label_to_bbox_px_map(rgb, points_list)
 
     # 2) 将点云投影到像素平面
     us, vs, mask = _project_pcd_to_pixels(env, rgb, pcd)
@@ -700,7 +846,7 @@ class FoldTops_Env(BaseEnv):
         #   Model_HALO/SADP_G/checkpoints/Fold_Tops_stage_1_2_3_${training_data_num}/${stage_1_checkpoint_num}.ckpt
         # 如需使用真正的统一策略模型，可将 task_name 改回 "Fold_Tops_unified"
         self.sadp_g = SADP_G(
-            task_name="Fold_Tops",
+            task_name="Fold_Tops_stage_1_2_3",
             data_num=training_data_num,
             checkpoint_num=stage_1_checkpoint_num,
         )
@@ -766,6 +912,7 @@ def FoldTops(
     vlm_base_url,
     vlm_model_name,
     debug_flag,
+    debug_dir,
 ):
     """
     单次 Fold Tops 任务入口：
@@ -804,9 +951,25 @@ def FoldTops(
         stage_3_checkpoint_num,
     )
 
-    # 若需要录制视频，则启动采集线程（异步）
-    if record_video_flag:
-        env.thread_record.start()
+    # ------------------------------- #
+    #   Debug 模式下也自动录视频       #
+    #   并确保 Ctrl+C 时可保存部分视频  #
+    # ------------------------------- #
+    enable_video_record = bool(record_video_flag or debug_flag)
+    if enable_video_record:
+        # 若 env 初始化时未创建线程（record_video_flag=False），这里手动创建
+        if not hasattr(env, "thread_record") or env.thread_record is None:
+            env.thread_record = threading.Thread(
+                target=env.env_camera.collect_rgb_graph_for_vedio
+            )
+            env.thread_record.daemon = True
+
+        # 确保采集开关为 True（create_mp4/create_gif 会将 capture 置 False）
+        env.env_camera.capture = True
+
+        # 启动采集线程（异步）
+        if not env.thread_record.is_alive():
+            env.thread_record.start()
 
     # 初始化 VLM client（单例），用于整个任务周期
     vlm_client, vlm_model_name = _get_vlm_client(vlm_base_url, vlm_model_name)
@@ -814,11 +977,106 @@ def FoldTops(
     # 若开启 debug 模式，则为本次任务创建独立的调试输出目录
     debug_rgb_dir = None
     debug_feat_dir = None
+    debug_video_dir = None
+    base_debug_dir = None
     if debug_flag:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        base_debug_dir = os.path.join("Data", "Fold_Tops_Validation_HALO", "debug", timestamp)
+        default_debug_root = os.path.join("Data", "Fold_Tops_Validation_HALO", "debug")
+        debug_root = debug_dir if debug_dir not in (None, "") else default_debug_root
+        base_debug_dir = os.path.join(debug_root, timestamp)
         debug_rgb_dir = os.path.join(base_debug_dir, "vlm_rgb")
         debug_feat_dir = os.path.join(base_debug_dir, "pcd_feature")
+        debug_video_dir = os.path.join(base_debug_dir, "video")
+
+    # 为本次运行预先确定一个“唯一且固定”的视频输出路径：
+    # - 无论正常结束还是 Ctrl+C，都只保存到同一个 mp4（避免出现 partial/final 两个文件）
+    video_output_path = None
+    if enable_video_record:
+        if debug_video_dir is not None:
+            os.makedirs(debug_video_dir, exist_ok=True)
+            video_output_path = get_unique_filename(os.path.join(debug_video_dir, "run"), ".mp4")
+        else:
+            out_dir = os.path.join("Data", "Fold_Tops_Validation_HALO", "video")
+            os.makedirs(out_dir, exist_ok=True)
+            video_output_path = get_unique_filename(os.path.join(out_dir, "run"), ".mp4")
+
+    # 统一的视频落盘函数：正常结束/异常退出(Ctrl+C)/系统退出时都尽力保存
+    video_saved = {"done": False}
+    _old_sigint_handler = signal.getsignal(signal.SIGINT)
+    _old_sigterm_handler = signal.getsignal(signal.SIGTERM)
+    stop_requested = {"flag": False}
+
+    def _finalize_video(reason: str) -> None:
+        """
+        IMPORTANT:
+        - Do NOT do heavy I/O in signal handlers; call this from normal control flow (try/finally).
+        - Temporarily ignore SIGINT during mp4 export to avoid a second Ctrl+C truncating the file.
+        """
+        if not enable_video_record:
+            return
+        if video_saved["done"]:
+            return
+        if video_output_path is None:
+            return
+        if not hasattr(env, "env_camera") or not hasattr(env.env_camera, "video_frame"):
+            return
+        if env.env_camera.video_frame is None or len(env.env_camera.video_frame) == 0:
+            return
+
+        old = signal.getsignal(signal.SIGINT)
+        try:
+            signal.signal(signal.SIGINT, signal.SIG_IGN)
+        except Exception:
+            old = None
+
+        try:
+            # 1) Stop capture thread first (avoid append while encoding)
+            env.env_camera.capture = False
+            if hasattr(env, "thread_record") and env.thread_record is not None:
+                if env.thread_record.is_alive():
+                    env.thread_record.join(timeout=10.0)
+
+            # 2) Export mp4 (single path; no partial/final split)
+            env.env_camera.create_mp4(video_output_path)
+            video_saved["done"] = True
+            cprint(f"[VIDEO] finalized ({reason}) -> {video_output_path}", "green")
+        except Exception as e:
+            cprint(f"[WARNING] 保存 mp4 失败：{e}", "yellow")
+        finally:
+            # restore SIGINT handler
+            if old is not None:
+                try:
+                    signal.signal(signal.SIGINT, old)
+                except Exception:
+                    pass
+
+    def _request_stop(signum, frame):
+        """
+        Signal handler: keep it lightweight.
+        - Request stop
+        - Stop capture ASAP
+        - Let main loop raise KeyboardInterrupt (or exit) and finalize in finally
+        """
+        stop_requested["flag"] = True
+        try:
+            if hasattr(env, "env_camera"):
+                env.env_camera.capture = False
+        except Exception:
+            pass
+        raise KeyboardInterrupt
+
+    # Install minimal handlers: request stop only (no mp4 I/O here)
+    try:
+        signal.signal(signal.SIGINT, _request_stop)
+    except Exception:
+        pass
+    try:
+        signal.signal(signal.SIGTERM, _request_stop)
+    except Exception:
+        pass
+
+    # 进程退出时兜底保存（包括未捕获异常 / 正常退出）
+    atexit.register(lambda: _finalize_video("exit"))
 
     # 记录最初一次的衣物点云，用于后续基于 GAM 的评估
     initial_pcd = None
@@ -828,152 +1086,147 @@ def FoldTops(
     # ------------------------------- #
     max_subtasks = 6
     finished_by_vlm = False
-
-    for subtask_idx in range(max_subtasks):
-        cprint(
-            f"=========== Subtask {subtask_idx} : VLM 规划 ===========",
-            color="cyan",
-        )
-
-        # ------------------------------- #
-        #   1. 获取当前衣物点云 & RGB     #
-        # ------------------------------- #
-        # 为了获得“只有衣物”的观测，这里仅在渲染上隐藏双臂，不影响物理仿真
-        set_prim_visible_group(
-            prim_path_list=["/World/DexLeft", "/World/DexRight"],
-            visible=False,
-        )
-        for _ in range(50):
-            env.step()
-
-        rgb = env.garment_camera.get_rgb_graph(
-            save_or_not=False,
-            save_path=None,
-        )
-
-        pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
-            save_or_not=False,
-            save_path=get_unique_filename("data", extension=".ply"),
-            real_time_watch=False,
-        )
-
-        if pcd is None or len(pcd) == 0:
-            cprint("[WARNING] 子任务开始时衣物点云为空，提前结束折叠流程。", "red")
-            break
-
-        if initial_pcd is None:
-            initial_pcd = pcd.copy()
-
-        # 在当前子任务内保持 garment_point_cloud 不变
-        env.garment_pcd = pcd
-
-        # 调用 VLM，得到当前整件衣物的折叠 plan 与 keypoint bboxes
-        vlm_result = _ask_vlm_plan_and_points(rgb, vlm_client, vlm_model_name)
-        plan = vlm_result.get("plan", None)
-        points = vlm_result.get("points", None)
-
-        # 若处于 debug 模式，则记录本轮 VLM 输出与可视化结果
-        if debug_flag:
-            _debug_save_vlm_output(
-                debug_dir=os.path.dirname(debug_rgb_dir)
-                if debug_rgb_dir is not None
-                else os.path.join("Data", "Fold_Tops_Validation_HALO", "debug"),
-                step_idx=subtask_idx,
-                vlm_result=vlm_result,
+    try:
+        for subtask_idx in range(max_subtasks):
+            cprint(
+                f"=========== Subtask {subtask_idx} : VLM 规划 ===========",
+                color="cyan",
             )
-            if debug_rgb_dir is not None:
-                rgb_path = os.path.join(
-                    debug_rgb_dir,
-                    f"vlm_rgb_{subtask_idx:03d}.png",
-                )
-                _debug_save_vlm_rgb_with_bbox(rgb, points, rgb_path)
 
-        # 恢复双臂可见，后续执行具体动作
-        set_prim_visible_group(
-            prim_path_list=["/World/DexLeft", "/World/DexRight"],
-            visible=True,
-        )
-        for _ in range(50):
-            env.step()
+            # ------------------------------- #
+            #   1. 获取当前衣物点云 & RGB     #
+            # ------------------------------- #
+            # 为了获得“只有衣物”的观测，这里仅在渲染上隐藏双臂，不影响物理仿真
+            set_prim_visible_group(
+                prim_path_list=["/World/DexLeft", "/World/DexRight"],
+                visible=False,
+            )
+            for _ in range(50):
+                env.step()
 
-        # ------------------------------- #
-        #   2. 解析 plan，构造特征         #
-        # ------------------------------- #
-        if isinstance(plan, str):
-            # VLM 认为已经完成折叠
-            if plan.strip().lower() == "already finish folding":
-                cprint("VLM 判断已完成折叠，停止子任务循环。", "green")
-                finished_by_vlm = True
-                break
-            else:
-                cprint(
-                    f"[WARNING] VLM 返回的 plan 为字符串且非 'already finish folding'：{plan}",
-                    "yellow",
-                )
+            rgb = env.garment_camera.get_rgb_graph(
+                save_or_not=False,
+                save_path=None,
+            )
+
+            pcd, color = env.garment_camera.get_point_cloud_data_from_segment(
+                save_or_not=False,
+                save_path=get_unique_filename("data", extension=".ply"),
+                real_time_watch=False,
+            )
+
+            if pcd is None or len(pcd) == 0:
+                cprint("[WARNING] 子任务开始时衣物点云为空，提前结束折叠流程。", "red")
                 break
 
-        if not isinstance(plan, list) or len(plan) == 0:
-            cprint(f"[WARNING] VLM 返回的 plan 为空或格式错误：{plan}", "yellow")
-            break
+            if initial_pcd is None:
+                initial_pcd = pcd.copy()
 
-        # 只取第一个 step 作为当前需要执行的高层动作
-        current_step = plan[0]
+            # 在当前子任务内保持 garment_point_cloud 不变
+            env.garment_pcd = pcd
 
-        env.points_affordance_feature = build_points_affordance_feature_from_vlm(
-            env, rgb, pcd, current_step, points
-        )
+            # 调用 VLM，得到当前整件衣物的折叠 plan 与 keypoint bboxes
+            vlm_result = _ask_vlm_plan_and_points(rgb, vlm_client, vlm_model_name)
+            plan = vlm_result.get("plan", None)
+            points = vlm_result.get("points", None)
 
-        # 在构造好 points_affordance_feature 之后，若处于 debug 模式，则在 3D 上进行可视化
-        if debug_flag and debug_feat_dir is not None:
-            # 1) 保存仅包含衣物点云几何形状的可视化
-            pcd_path = os.path.join(
-                debug_feat_dir,
-                f"garment_pcd_{subtask_idx:03d}.png",
+            # 若处于 debug 模式，则记录本轮 VLM 输出与可视化结果
+            if debug_flag:
+                _debug_save_vlm_output(
+                    debug_dir=os.path.dirname(debug_rgb_dir)
+                    if debug_rgb_dir is not None
+                    else os.path.join("Data", "Fold_Tops_Validation_HALO", "debug"),
+                    step_idx=subtask_idx,
+                    vlm_result=vlm_result,
+                )
+                if debug_rgb_dir is not None:
+                    # 1) 保存原始 RGB（不带 bbox）
+                    rgb_raw_path = os.path.join(
+                        debug_rgb_dir,
+                        f"vlm_rgb_raw_{subtask_idx:03d}.png",
+                    )
+                    _debug_save_vlm_rgb_raw(rgb, rgb_raw_path)
+
+                    # 2) 保存带 bbox 可视化的 RGB
+                    rgb_vis_path = os.path.join(
+                        debug_rgb_dir,
+                        f"vlm_rgb_{subtask_idx:03d}.png",
+                    )
+                    _debug_save_vlm_rgb_with_bbox(rgb, points, rgb_vis_path)
+
+            # 恢复双臂可见，后续执行具体动作
+            set_prim_visible_group(
+                prim_path_list=["/World/DexLeft", "/World/DexRight"],
+                visible=True,
             )
-            _debug_save_pcd_only(pcd, pcd_path)
+            for _ in range(50):
+                env.step()
 
-            # 2) 保存在点云上叠加 points_affordance_feature 的 3D 可视化
-            feat_path = os.path.join(
-                debug_feat_dir,
-                f"pcd_feature_{subtask_idx:03d}.png",
+            # ------------------------------- #
+            #   2. 解析 plan，构造特征         #
+            # ------------------------------- #
+            if isinstance(plan, str):
+                # VLM 认为已经完成折叠
+                if plan.strip().lower() == "already finish folding":
+                    cprint("VLM 判断已完成折叠，停止子任务循环。", "green")
+                    finished_by_vlm = True
+                    break
+                else:
+                    cprint(
+                        f"[WARNING] VLM 返回的 plan 为字符串且非 'already finish folding'：{plan}",
+                        "yellow",
+                    )
+                    break
+
+            if not isinstance(plan, list) or len(plan) == 0:
+                cprint(f"[WARNING] VLM 返回的 plan 为空或格式错误：{plan}", "yellow")
+                break
+
+            # 只取第一个 step 作为当前需要执行的高层动作
+            current_step = plan[0]
+
+            env.points_affordance_feature = build_points_affordance_feature_from_vlm(
+                env, rgb, pcd, current_step, points
             )
-            _debug_save_affordance_3d(pcd, env.points_affordance_feature, feat_path)
 
-        # ------------------------------- #
-        #   3. 在当前子任务下滚动策略      #
-        # ------------------------------- #
-        # 为了与原脚本大致保持时间长度，前两个子任务执行 8 次 rollout，之后执行 12 次
-        num_outer_iters = 8 if subtask_idx < 2 else 12
+            # ------------------------------- #
+            #   2.5 motion planning 到操作点   #
+            # ------------------------------- #
+            # 在进入 DP rollout 前，先把手移动到当前 step 的 “from” 点（bbox->3D 质心）
+            _ = motion_plan_move_to_vlm_targets(
+                env=env,
+                rgb=rgb,
+                pcd=pcd,
+                plan_step=current_step,
+                points_list=points,
+                settle_steps=20,
+            )
 
-        for i in range(num_outer_iters):
-            print(f"Subtask_{subtask_idx}_Step: {i}")
+            # 在构造好 points_affordance_feature 之后，若处于 debug 模式，则在 3D 上进行可视化
+            if debug_flag and debug_feat_dir is not None:
+                # 1) 保存仅包含衣物点云几何形状的可视化
+                pcd_path = os.path.join(
+                    debug_feat_dir,
+                    f"garment_pcd_{subtask_idx:03d}.png",
+                )
+                _debug_save_pcd_only(pcd, pcd_path)
 
-            joint_pos_L = env.bimanual_dex.dexleft.get_joint_positions()
-            joint_pos_R = env.bimanual_dex.dexright.get_joint_positions()
-            joint_state = np.concatenate([joint_pos_L, joint_pos_R])
+                # 2) 保存在点云上叠加 points_affordance_feature 的 3D 可视化
+                feat_path = os.path.join(
+                    debug_feat_dir,
+                    f"pcd_feature_{subtask_idx:03d}.png",
+                )
+                _debug_save_affordance_3d(pcd, env.points_affordance_feature, feat_path)
 
-            obs = dict()
-            obs["agent_pos"] = joint_state
-            obs["environment_point_cloud"] = env.env_camera.get_pointcloud_from_depth()
-            obs["garment_point_cloud"] = env.garment_pcd
-            obs["points_affordance_feature"] = env.points_affordance_feature
+            # ------------------------------- #
+            #   3. 在当前子任务下滚动策略      #
+            # ------------------------------- #
+            # 为了与原脚本大致保持时间长度，前两个子任务执行 8 次 rollout，之后执行 12 次
+            num_outer_iters = 8 if subtask_idx < 2 else 12
 
-            # 统一策略模型输出 [4, 60] 的关节角序列
-            action = env.sadp_g.get_action(obs)
-            print("action_shape:", action.shape)
+            for i in range(num_outer_iters):
+                print(f"Subtask_{subtask_idx}_Step: {i}")
 
-            for j in range(4):
-                # 将每帧动作拆成左右臂 30 维关节角
-                action_L = ArticulationAction(joint_positions=action[j][:30])
-                action_R = ArticulationAction(joint_positions=action[j][30:])
-
-                env.bimanual_dex.dexleft.apply_action(action_L)
-                env.bimanual_dex.dexright.apply_action(action_R)
-
-                for _ in range(5):
-                    env.step()
-
-                # 更新观测并回传给策略（例如维护内部轨迹状态）
                 joint_pos_L = env.bimanual_dex.dexleft.get_joint_positions()
                 joint_pos_R = env.bimanual_dex.dexright.get_joint_positions()
                 joint_state = np.concatenate([joint_pos_L, joint_pos_R])
@@ -984,68 +1237,112 @@ def FoldTops(
                 obs["garment_point_cloud"] = env.garment_pcd
                 obs["points_affordance_feature"] = env.points_affordance_feature
 
-                env.sadp_g.update_obs(obs)
+                # 统一策略模型输出 [4, 60] 的关节角序列
+                action = env.sadp_g.get_action(obs)
+                print("action_shape:", action.shape)
 
-        # ------------------------------- #
-        #   4. 子任务结束后加速布料稳定    #
-        # ------------------------------- #
-        env.garment.particle_material.set_gravity_scale(10.0)
-        settle_steps = 200 if subtask_idx < 2 else 100
-        for _ in range(settle_steps):
+                for j in range(4):
+                    # 将每帧动作拆成左右臂 30 维关节角
+                    action_L = ArticulationAction(joint_positions=action[j][:30])
+                    action_R = ArticulationAction(joint_positions=action[j][30:])
+
+                    env.bimanual_dex.dexleft.apply_action(action_L)
+                    env.bimanual_dex.dexright.apply_action(action_R)
+
+                    for _ in range(5):
+                        env.step()
+
+                    # 更新观测并回传给策略（例如维护内部轨迹状态）
+                    joint_pos_L = env.bimanual_dex.dexleft.get_joint_positions()
+                    joint_pos_R = env.bimanual_dex.dexright.get_joint_positions()
+                    joint_state = np.concatenate([joint_pos_L, joint_pos_R])
+
+                    obs = dict()
+                    obs["agent_pos"] = joint_state
+                    obs["environment_point_cloud"] = env.env_camera.get_pointcloud_from_depth()
+                    obs["garment_point_cloud"] = env.garment_pcd
+                    obs["points_affordance_feature"] = env.points_affordance_feature
+
+                    env.sadp_g.update_obs(obs)
+
+            # ------------------------------- #
+            #   4. 子任务结束后加速布料稳定    #
+            # ------------------------------- #
+            env.garment.particle_material.set_gravity_scale(10.0)
+            settle_steps = 200 if subtask_idx < 2 else 100
+            for _ in range(settle_steps):
+                env.step()
+            env.garment.particle_material.set_gravity_scale(1.0)
+
+            # ------------------------------- #
+            #   4.5 子任务结束后 reset 回去    #
+            # ------------------------------- #
+            motion_plan_reset_hands_home(env, settle_steps=20)
+
+        # 折叠完成后，隐藏双臂，只保留衣服与环境，方便进行结果可视化和评估
+        dexleft_prim = prims_utils.get_prim_at_path("/World/DexLeft")
+        dexright_prim = prims_utils.get_prim_at_path("/World/DexRight")
+        set_prim_visibility(dexleft_prim, False)
+        set_prim_visibility(dexright_prim, False)
+
+        for _ in range(50):
             env.step()
-        env.garment.particle_material.set_gravity_scale(1.0)
 
-    # 子任务循环结束（可能由 max_subtasks 或 VLM 完成信号触发）
-    
-    # 折叠完成后，隐藏双臂，只保留衣服与环境，方便进行结果可视化和评估
-    dexleft_prim = prims_utils.get_prim_at_path("/World/DexLeft")
-    dexright_prim = prims_utils.get_prim_at_path("/World/DexRight")
-    set_prim_visibility(dexleft_prim, False)
-    set_prim_visibility(dexright_prim, False)
-    
-    for i in range(50):
-        env.step()
-
-    # 如果需要生成 mp4 视频，这里会将线程采集到的 rgb 序列写成视频文件
-    if record_video_flag:
-        if not os.path.exists("Data/Fold_Tops_Validation_HALO/vedio"):
-            os.makedirs("Data/Fold_Tops_Validation_HALO/vedio")
-        env.env_camera.create_mp4(get_unique_filename("Data/Fold_Tops_Validation_HALO/vedio/vedio", ".mp4"))
+        # 将线程采集到的 rgb 序列写成视频文件（debug/正常模式统一走同一套逻辑）
+        _finalize_video("normal")
    
         
-    # ----------------------------- #
-    #   折叠结果自动评估（success）   #
-    # ----------------------------- #
-    success = True
-    # 使用最初一次的衣物点云（若存在）或当前点云，调用 GAM 采样四个关键点，
-    # 用于构造评估区域 boundary：
-    # boundary = [min_x, max_x, min_y, max_y]
-    # 直观理解：用 4 个点确定一个“理想折叠区域”的矩形包围盒
-    eval_pcd = initial_pcd if initial_pcd is not None else env.garment_pcd
-    points, *_ = env.model.get_manipulation_points(eval_pcd, [554, 1540, 1014, 1385])
-    boundary = [points[0][0] - 0.05, points[1][0] + 0.05, points[3][1] - 0.1, points[2][1] + 0.1]
-    # 获取折叠结束后的衣服点云
-    pcd_end, _ = env.garment_camera.get_point_cloud_data_from_segment(
-        save_or_not=False,
-        save_path=get_unique_filename("data", extension=".ply"),
-        real_time_watch=False,
-    )
-    # 使用 Position_Judge 中的 judge_pcd 函数判断折叠质量：
-    # - 若在 boundary 区域内的点云分布满足阈值要求（覆盖度/致密度达到阈值），则视为成功
-    success = judge_pcd(pcd_end, boundary, threshold=0.12)
-    cprint(f"final result: {success}", color="green", on_color="on_green")
+        # ----------------------------- #
+        #   折叠结果自动评估（success）   #
+        # ----------------------------- #
+        success = True
+        # 使用最初一次的衣物点云（若存在）或当前点云，调用 GAM 采样四个关键点，
+        # 用于构造评估区域 boundary：
+        # boundary = [min_x, max_x, min_y, max_y]
+        # 直观理解：用 4 个点确定一个“理想折叠区域”的矩形包围盒
+        eval_pcd = initial_pcd if initial_pcd is not None else env.garment_pcd
+        points, *_ = env.model.get_manipulation_points(eval_pcd, [554, 1540, 1014, 1385])
+        boundary = [points[0][0] - 0.05, points[1][0] + 0.05, points[3][1] - 0.1, points[2][1] + 0.1]
+        # 获取折叠结束后的衣服点云
+        pcd_end, _ = env.garment_camera.get_point_cloud_data_from_segment(
+            save_or_not=False,
+            save_path=get_unique_filename("data", extension=".ply"),
+            real_time_watch=False,
+        )
+        # 使用 Position_Judge 中的 judge_pcd 函数判断折叠质量：
+        # - 若在 boundary 区域内的点云分布满足阈值要求（覆盖度/致密度达到阈值），则视为成功
+        success = judge_pcd(pcd_end, boundary, threshold=0.12)
+        cprint(f"final result: {success}", color="green", on_color="on_green")
 
-    
-    # 若处于“批量验证模式”，则将结果写入日志，便于统计成功率
-    if validation_flag:
-        if not os.path.exists("Data/Fold_Tops_Validation_HALO"):
-            os.makedirs("Data/Fold_Tops_Validation_HALO")
-        # write into .log file
-        with open("Data/Fold_Tops_Validation_HALO/validation_log.txt", "a") as f:
-            f.write(f"result:{success}  usd_path:{env.garment.usd_path}  pos_x:{pos[0]}  pos_y:{pos[1]}\n")
-        if not os.path.exists("Data/Fold_Tops_Validation_HALO/final_state_pic"):
-            os.makedirs("Data/Fold_Tops_Validation_HALO/final_state_pic")
-        env.env_camera.get_rgb_graph(save_or_not=True,save_path=get_unique_filename("Data/Fold_Tops_Validation_HALO/final_state_pic/img",".png"))
+        # 若处于“批量验证模式”，则将结果写入日志，便于统计成功率
+        if validation_flag:
+            if not os.path.exists("Data/Fold_Tops_Validation_HALO"):
+                os.makedirs("Data/Fold_Tops_Validation_HALO")
+            # write into .log file
+            with open("Data/Fold_Tops_Validation_HALO/validation_log.txt", "a") as f:
+                f.write(f"result:{success}  usd_path:{env.garment.usd_path}  pos_x:{pos[0]}  pos_y:{pos[1]}\n")
+            if not os.path.exists("Data/Fold_Tops_Validation_HALO/final_state_pic"):
+                os.makedirs("Data/Fold_Tops_Validation_HALO/final_state_pic")
+            env.env_camera.get_rgb_graph(
+                save_or_not=True,
+                save_path=get_unique_filename("Data/Fold_Tops_Validation_HALO/final_state_pic/img", ".png"),
+            )
+
+    except KeyboardInterrupt:
+        cprint("[INFO] KeyboardInterrupt received, finalizing video before exit...", "yellow")
+        _finalize_video("keyboard_interrupt")
+        # Re-raise so outer runner (e.g. Validation.sh) sees exit code 130
+        raise
+    finally:
+        # Restore original signal handlers
+        try:
+            signal.signal(signal.SIGINT, _old_sigint_handler)
+        except Exception:
+            pass
+        try:
+            signal.signal(signal.SIGTERM, _old_sigterm_handler)
+        except Exception:
+            pass
 
    
 if __name__=="__main__":
@@ -1097,6 +1394,7 @@ if __name__=="__main__":
         args.vlm_base_url,
         args.vlm_model_name,
         args.debug,
+        args.debug_dir,
     )
     
     # 若是批量验证模式，单次任务完成后即可关闭仿真；

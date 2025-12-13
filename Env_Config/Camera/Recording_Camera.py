@@ -178,14 +178,38 @@ class Recording_Camera:
         Take RGB frames from recording_camera and collect them for video/gif generation.
         '''
         # when capture flag is True, make camera capture photos
+        #
+        # NOTE:
+        # - In Isaac Sim / Replicator, `camera.get_rgb()` may occasionally return None
+        #   (e.g. annotator/render pipeline transient issues). Previously this would crash
+        #   the recording thread, leading to truncated videos even if mp4 export succeeds.
+        # - Here we make the recorder resilient: skip bad frames and keep recording.
+        last_warn_t = 0.0
         while self.capture:
-            data = self.camera.get_rgb()
-            if len(data):
-                self.video_frame.append(data)
-            
+            try:
+                data = self.camera.get_rgb()
+                if data is None:
+                    # transient failure, skip
+                    now = time.time()
+                    if now - last_warn_t > 2.0:
+                        cprint("[Recording_Camera] get_rgb returned None, skipping frame...", "yellow")
+                        last_warn_t = now
+                    time.sleep(0.05)
+                    continue
+
+                # Ensure it's a valid RGB ndarray
+                if hasattr(data, "shape") and len(getattr(data, "shape", ())) >= 2:
+                    self.video_frame.append(data)
+            except Exception as e:
+                now = time.time()
+                if now - last_warn_t > 2.0:
+                    cprint(f"[Recording_Camera] get_rgb failed, skipping frame: {e}", "yellow")
+                    last_warn_t = now
+                time.sleep(0.05)
+
             # take rgb photo every 100 ms
             time.sleep(0.1)
-            # print("get rgb successfully")
+
         cprint("stop get rgb", "green")
 
     # Backward compatibility: keep the old (misspelled) API name working
