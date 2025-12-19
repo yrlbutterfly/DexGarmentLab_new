@@ -1224,8 +1224,29 @@ def FoldTops(
             # 为了与原脚本大致保持时间长度，前两个子任务执行 8 次 rollout，之后执行 12 次
             num_outer_iters = 8 if subtask_idx < 2 else 12
 
+            # 手动提取的 Open 状态参考值 (来自 BimanualDex_Ur10e.py)
+            OPEN_HAND_POSE = np.array([
+                -0.06150788, -0.07899461,
+                -0.34906599, 0.02261488 , 0.01851636,0.01851636,
+                -0.08347217, 0.         , 0.00755569,0.00755569 ,
+                -0.09509672, 0.00797776, 0.0236096 ,0.0236096   ,
+                0.06855482, -0.34906599, 0.04799218 ,0.03465942, 0.03446003 ,
+                -0.06890292, 0.63903833, -0.15110777,-0.08261109  ,0.02802108
+            ])
+
             for i in range(num_outer_iters):
                 print(f"Subtask_{subtask_idx}_Step: {i}")
+
+                # 如果检测到双手张开（且不是刚开始），则认为已完成释放，提前跳出以防抖动
+                if i > 1:
+                    q_left = env.bimanual_dex.dexleft.get_joint_positions(joint_indices=env.bimanual_dex.dexleft.hand_dof_indices)
+                    q_right = env.bimanual_dex.dexright.get_joint_positions(joint_indices=env.bimanual_dex.dexright.hand_dof_indices)
+                    dist_l = np.linalg.norm(q_left - OPEN_HAND_POSE)
+                    dist_r = np.linalg.norm(q_right - OPEN_HAND_POSE)
+                    
+                    if dist_l < 1.5 and dist_r < 1.5:
+                        cprint(f"Detected open hands (dist_l={dist_l:.2f}, dist_r={dist_r:.2f}), breaking loop.", "yellow")
+                        break
 
                 joint_pos_L = env.bimanual_dex.dexleft.get_joint_positions()
                 joint_pos_R = env.bimanual_dex.dexright.get_joint_positions()

@@ -112,7 +112,7 @@ print_progress() {
 while [ "$current_num" -lt "$validation_num" ]; do
     print_progress "$current_num" "$validation_num" "$task_name"
 
-    $ISAAC_PATH Env_Validation/Fold_Tops_HALO_dp_debug.py \
+    $ISAAC_PATH Env_Validation/Fold_Tops_HALO_dp.py \
         --env_random_flag True \
         --garment_random_flag True \
         --record_video_flag True \

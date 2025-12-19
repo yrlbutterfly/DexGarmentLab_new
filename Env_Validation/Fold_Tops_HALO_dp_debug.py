@@ -68,106 +68,18 @@ from Model_HALO.SADP_G.SADP_G import SADP_G
 
 # 通过 VLM 生成折叠 plan + keypoint bbox 的提示词
 VLM_FOLD_PROMPT = (
-    "<image>\n"
-    "The image contains a piece of clothing. Please infer how it should be folded.\n\n"
-    "Your output must be a single JSON array containing two objects: one with a \"plan\" field and one with a \"points\" field.\n\n"
-    "------------------------------------------------ OUTPUT FORMAT (STRICT) ------------------------------------------------\n\n"
-    "Your final output must always be in the following structure:\n\n"
-    "[\n\n"
-    "  { \"plan\": <plan_output> },\n\n"
-    "  { \"points\": <points_output> }\n\n"
-    "]\n\n"
-    "Where:\n\n"
-    "- <plan_output> is either:\n\n"
-    "  1) A list of folding steps, OR\n\n"
-    "  2) The string \"already finish folding\" if no folding is needed.\n\n"
-    "- <points_output> is a list of keypoint bounding box entries mentioned in the plan.\n\n"
-    "------------------------------------------------ FOLDING PLAN RULES ------------------------------------------------\n\n"
-    "If folding is required, the plan must be a list. The i-th element represents the i-th folding action:\n\n"
-    "{\n\n"
-    "  \"left\": {\"from\": <keypoint_name>, \"to\": <keypoint_name>},\n\n"
-    "  \"right\": {\"from\": <keypoint_name>, \"to\": <keypoint_name>}\n\n"
-    "}\n\n"
-    "- If a robotic arm does not need to operate during a step, assign null to both \"from\" and \"to\" for that arm.\n\n"
-    "- The folding plan must be practical for robotic manipulation:\n\n"
-    "  actions should avoid arm collisions, use clear step-by-step motions rather than\n\n"
-    "  merging multiple operations, and follow common-sense garment-folding practices.\n\n"
-    "Valid keypoint names include:\n\n"
-    "left_cuff, right_cuff\n\n"
-    "left_collar, right_collar, center_collar\n\n"
-    "left_hem, right_hem, center_hem\n\n"
-    "left_armpit, right_armpit\n\n"
-    "left_shoulder, right_shoulder\n\n"
-    "left_waist, right_waist\n\n"
-    "------------------------------------------------ STANDARD SHIRT FOLDING PROCEDURE ------------------------------------------------\n\n"
-    "The complete folding plan contains three standard steps:\n\n"
-    "Step 1 — Fold the left sleeve inward:\n\n"
-    "    Move: left_cuff  -> right_shoulder\n\n"
-    "    Right arm stays idle (null -> null)\n\n"
-    "Step 2 — Fold the right sleeve inward:\n\n"
-    "    Move: right_cuff -> left_shoulder\n\n"
-    "    Left arm stays idle (null -> null)\n\n"
-    "Step 3 — Fold the bottom hem upward:\n\n"
-    "    Move left_hem  -> left_shoulder\n\n"
-    "    Move right_hem -> right_shoulder\n\n"
-    "    (Both arms operate simultaneously)\n\n"
-    "------------------------------------------------ FOLDING COMPLETION CONDITION ------------------------------------------------\n\n"
-    "Return \"already finish folding\" if the garment is already folded.\n\n"
-    "A garment is considered \"already folded\" when:\n\n"
-    "- Most garment pixels or keypoints fall inside a compact rectangular region,\n\n"
-    "- Both sleeves have already been folded inward,\n\n"
-    "- The hem is lifted so the shirt forms a clean rectangle.\n\n"
-    "If these conditions are met, no folding plan is needed and the output should be:\n\n"
-    "[\n\n"
-    "  { \"plan\": \"already finish folding\" },\n\n"
-    "  { \"points\": [] }\n\n"
-    "]\n\n"
-    "------------------------------------------------ KEYPOINT BOUNDING BOX RULES ------------------------------------------------\n\n"
-    "Each keypoint entry must follow:\n\n"
-    "{\n\n"
-    "  \"label\": \"<keypoint_name>\",\n\n"
-    "  \"bbox\": [x_min, y_min, x_max, y_max]\n\n"
-    "}\n\n"
-    "Where:\n\n"
-    "- x_min, y_min = top-left corner of bounding box\n\n"
-    "- x_max, y_max = bottom-right corner of bounding box\n\n"
-    "------------------------------------------------ COMBINED EXAMPLE OUTPUT ------------------------------------------------\n\n"
-    "Example folding plan(the numbers in bboxes are random):\n\n"
-    "[\n\n"
-    "  {\n\n"
-    "    \"plan\": [\n\n"
-    "      {\n\n"
-    "        \"left\": {\"from\": \"left_cuff\", \"to\": \"right_shoulder\"},\n\n"
-    "        \"right\": {\"from\": null, \"to\": null}\n\n"
-    "      },\n\n"
-    "      {\n\n"
-    "        \"left\": {\"from\": null, \"to\": null},\n\n"
-    "        \"right\": {\"from\": \"right_cuff\", \"to\": \"left_shoulder\"}\n\n"
-    "      },\n\n"
-    "      {\n\n"
-    "        \"left\": {\"from\": \"left_hem\", \"to\": \"left_shoulder\"},\n\n"
-    "        \"right\": {\"from\": \"right_hem\", \"to\": \"right_shoulder\"}\n\n"
-    "      }\n\n"
-    "    ]\n\n"
-    "  },\n\n"
-    "  {\n\n"
-    "    \"points\": [\n\n"
-    "      {\"label\": \"left_cuff\", \"bbox\": [90, 180, 140, 230]},\n\n"
-    "      {\"label\": \"right_cuff\", \"bbox\": [290, 190, 340, 240]},\n\n"
-    "      {\"label\": \"left_hem\", \"bbox\": [100, 250, 150, 300]},\n\n"
-    "      {\"label\": \"right_hem\", \"bbox\": [250, 250, 300, 300]},\n\n"
-    "      {\"label\": \"left_shoulder\", \"bbox\": [100, 100, 150, 150]},\n\n"
-    "      {\"label\": \"right_shoulder\", \"bbox\": [250, 100, 300, 150]}\n\n"
-    "    ]\n\n"
-    "  }\n\n"
-    "]\n\n"
-    "Example when no folding is needed:\n\n"
-    "[\n\n"
-    "  { \"plan\": \"already finish folding\" },\n\n"
-    "  { \"points\": [] }\n\n"
-    "]\n\n"
-    "------------------------------------------------\n\n"
-    "Do not output anything except the final JSON array.\n"
+    "Given an image of a potentially deformable garment, identify and localize the following key regions: "
+    "left_cuff, right_cuff, left_collar, right_collar, center_collar, left_hem, right_hem, center_hem, "
+    "left_armpit, right_armpit, left_shoulder, right_shoulder, left_waist, right_waist. "
+    "For each region, provide a tight 2D bounding box in the format: [x_min, y_min, x_max, y_max]. "
+    "Return the results as a JSON array where each entry contains a \"label\" and a \"bbox_2d\" field. "
+    "Example format: [{\"label\": \"left_cuff\", \"bbox_2d\": [x1, y1, x2, y2]}, {\"label\": \"right_cuff\", \"bbox_2d\": [x1, y1, x2, y2]}]. "
+    "Region definitions: left_collar: left collar tip; right_collar: right collar tip; center_collar: lowest point of the V-neck or collar center; "
+    "left_cuff: center of left sleeve opening; right_cuff: center of right sleeve opening; "
+    "left_hem: bottom-left corner of the hem; right_hem: bottom-right corner of the hem; center_hem: midpoint of the bottom hem; "
+    "left_armpit: under left armpit area; right_armpit: under right armpit area; "
+    "left_shoulder: left shoulder point where sleeve attaches; right_shoulder: right shoulder point; "
+    "left_waist: left waist point; right_waist: right waist point. Ensure all regions are included in the output."
 )
 
 
@@ -197,14 +109,10 @@ def _encode_rgb_to_data_url(rgb: np.ndarray) -> str:
     return f"data:image/png;base64,{img_base64}"
 
 
-def _parse_vlm_output(raw_text: str) -> Dict[str, object]:
+def _parse_vlm_output(raw_text: str) -> List[Dict[str, object]]:
     """
-    解析 VLM 的原始文本输出，抽取 JSON 数组，并返回 plan 与 points 两个字段。
-    期望格式（严格）：
-        [
-          { \"plan\": ... },
-          { \"points\": [...] }
-        ]
+    解析 VLM 的原始文本输出，抽取 JSON 数组。
+    期望格式：[{"label": "...", "bbox_2d": [...]}, ...]
     """
     try:
         data = json.loads(raw_text)
@@ -214,19 +122,15 @@ def _parse_vlm_output(raw_text: str) -> Dict[str, object]:
             raise ValueError(f"无法在 VLM 输出中找到 JSON 数组，原始输出:\n{raw_text}")
         data = json.loads(match.group(0))
 
-    if not isinstance(data, list) or len(data) != 2:
-        raise ValueError(f"VLM 输出 JSON 结构不符合预期，应为长度为 2 的列表，但得到: {data}")
+    if not isinstance(data, list):
+        raise ValueError(f"VLM 输出 JSON 结构不符合预期，应为列表，但得到: {data}")
 
-    plan_obj = data[0] if isinstance(data[0], dict) else {}
-    points_obj = data[1] if isinstance(data[1], dict) else {}
-    plan = plan_obj.get("plan", None)
-    points = points_obj.get("points", None)
-    return {"plan": plan, "points": points}
+    return data
 
 
-def _ask_vlm_plan_and_points(rgb: np.ndarray, client, model_name: str) -> Dict[str, object]:
+def _ask_vlm_points(rgb: np.ndarray, client, model_name: str) -> List[Dict[str, object]]:
     """
-    给定当前衣物 RGB 图像，调用本地多模态 VLM，返回解析后的 plan 与 points。
+    给定当前衣物 RGB 图像，调用本地多模态 VLM，返回解析后的 points 列表。
     """
     image_data_url = _encode_rgb_to_data_url(rgb)
     response = client.chat.completions.create(
@@ -252,7 +156,7 @@ def _ask_vlm_plan_and_points(rgb: np.ndarray, client, model_name: str) -> Dict[s
 def _debug_save_vlm_output(
     debug_dir: str,
     step_idx: int,
-    vlm_result: Dict[str, object],
+    vlm_result: object,
 ) -> None:
     """
     在 debug 模式下，将每轮 VLM 的原始解析结果追加写入一个文本文件。
@@ -285,7 +189,7 @@ def _debug_save_vlm_rgb_with_bbox(
         if not isinstance(item, dict):
             continue
         label = item.get("label")
-        bbox = item.get("bbox")
+        bbox = item.get("bbox") or item.get("bbox_2d")
         if (
             label is None
             or bbox is None
@@ -522,7 +426,7 @@ def _label_to_bbox_px_map(
         if not isinstance(item, dict):
             continue
         label = item.get("label")
-        bbox = item.get("bbox")
+        bbox = item.get("bbox") or item.get("bbox_2d")
         if (
             label is None
             or bbox is None
@@ -783,7 +687,7 @@ class FoldTops_Env(BaseEnv):
             self.world, 
             pos=np.array([0, 3.0, 0.6]),
             ori=np.array([0.0, 0.0, 0.0]),
-            usd_path="Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_018/TCLC_018_obj.usd" if usd_path is None else usd_path,
+            usd_path="Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_014/TCLC_model2_014_obj.usd" if usd_path is None else usd_path,
             contact_offset=0.012,             
             rest_offset=0.010,                
             particle_contact_offset=0.012,    
@@ -1082,14 +986,27 @@ def FoldTops(
     initial_pcd = None
 
     # ------------------------------- #
-    #   VLM 驱动的子任务循环          #
+    #   固定三步策略测试循环 (代替 VLM 规划)
     # ------------------------------- #
-    max_subtasks = 6
-    finished_by_vlm = False
+    fixed_stages = [
+        {
+            "left": {"from": "left_cuff", "to": "right_shoulder"},
+            "right": {"from": None, "to": None}
+        },
+        {
+            "left": {"from": None, "to": None},
+            "right": {"from": "right_cuff", "to": "left_shoulder"}
+        },
+        {
+            "left": {"from": "left_hem", "to": "left_shoulder"},
+            "right": {"from": "right_hem", "to": "right_shoulder"}
+        }
+    ]
+
     try:
-        for subtask_idx in range(max_subtasks):
+        for subtask_idx, current_step in enumerate(fixed_stages):
             cprint(
-                f"=========== Subtask {subtask_idx} : VLM 规划 ===========",
+                f"=========== Subtask {subtask_idx} : Policy Execution (Fixed Step) ===========",
                 color="cyan",
             )
 
@@ -1125,10 +1042,8 @@ def FoldTops(
             # 在当前子任务内保持 garment_point_cloud 不变
             env.garment_pcd = pcd
 
-            # 调用 VLM，得到当前整件衣物的折叠 plan 与 keypoint bboxes
-            vlm_result = _ask_vlm_plan_and_points(rgb, vlm_client, vlm_model_name)
-            plan = vlm_result.get("plan", None)
-            points = vlm_result.get("points", None)
+            # 调用 VLM，得到当前整件衣物的关键点
+            points = _ask_vlm_points(rgb, vlm_client, vlm_model_name)
 
             # 若处于 debug 模式，则记录本轮 VLM 输出与可视化结果
             if debug_flag:
@@ -1137,7 +1052,7 @@ def FoldTops(
                     if debug_rgb_dir is not None
                     else os.path.join("Data", "Fold_Tops_Validation_HALO", "debug"),
                     step_idx=subtask_idx,
-                    vlm_result=vlm_result,
+                    vlm_result=points,
                 )
                 if debug_rgb_dir is not None:
                     # 1) 保存原始 RGB（不带 bbox）
@@ -1163,27 +1078,8 @@ def FoldTops(
                 env.step()
 
             # ------------------------------- #
-            #   2. 解析 plan，构造特征         #
+            #   2. 构造特征 (使用固定步骤)     #
             # ------------------------------- #
-            if isinstance(plan, str):
-                # VLM 认为已经完成折叠
-                if plan.strip().lower() == "already finish folding":
-                    cprint("VLM 判断已完成折叠，停止子任务循环。", "green")
-                    finished_by_vlm = True
-                    break
-                else:
-                    cprint(
-                        f"[WARNING] VLM 返回的 plan 为字符串且非 'already finish folding'：{plan}",
-                        "yellow",
-                    )
-                    break
-
-            if not isinstance(plan, list) or len(plan) == 0:
-                cprint(f"[WARNING] VLM 返回的 plan 为空或格式错误：{plan}", "yellow")
-                break
-
-            # 只取第一个 step 作为当前需要执行的高层动作
-            current_step = plan[0]
 
             env.points_affordance_feature = build_points_affordance_feature_from_vlm(
                 env, rgb, pcd, current_step, points
