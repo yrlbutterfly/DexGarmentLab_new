@@ -93,7 +93,7 @@ def convert_tile_jsonl_to_conversations(input_file: str, output_file: str):
                 else:
                     input_dir = os.path.dirname(input_file)
                     image_path = os.path.join(input_dir, image_filename)
-
+                
                 answer = []
                 for key, value in data.items():
                     if key != "rgb" and key != "pcd":

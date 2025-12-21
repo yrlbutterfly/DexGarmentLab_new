@@ -113,9 +113,9 @@ def process_images(src_dir: str, dst_dir: str, subfolder: str, use_strong: bool 
 
 
 def main():
-    src_dir = "/home/psibot/DexGarmentLab/Preprocess/data/stage2_1206"
+    src_dir = "/home/admin01/Projects/DexGarmentLab/Preprocess/data/stage2_1206"
     # 使用更强的颜色扰动，输出到单独目录
-    dst_dir = "/home/psibot/DexGarmentLab/Preprocess/data/stage2_1206_color"
+    dst_dir = "/home/admin01/Projects/DexGarmentLab/Preprocess/data/stage2_1206_color"
 
     os.makedirs(dst_dir, exist_ok=True)
 

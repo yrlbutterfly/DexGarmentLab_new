@@ -138,8 +138,8 @@ def process_jsonl(
 
 def main():
     # Source and target directories
-    src_dir = "/home/psibot/DexGarmentLab/Preprocess/data/stage2_1206"
-    dst_dir = "/home/psibot/DexGarmentLab/Preprocess/data/stage2_1206_crop"
+    src_dir = "/home/admin01/Projects/DexGarmentLab/Preprocess/data/stage2_1206"
+    dst_dir = "/home/admin01/Projects/DexGarmentLab/Preprocess/data/stage2_1206_crop"
 
     os.makedirs(dst_dir, exist_ok=True)
 
