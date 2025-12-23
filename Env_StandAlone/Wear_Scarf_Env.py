@@ -73,7 +73,7 @@ class WearScarf_Env(BaseEnv):
             # pos=np.array([0.0, 0.25, 0.15]),
             pos=np.array([0.0, 3.0, 0.6]),
             ori=np.array([0.0, 0.0, 0.0]),
-            usd_path="Assets/Flatten_Scarf/flatten_scarf_0.4.usd" if usd_path is None else usd_path,
+            usd_path="Assets/Flatten_Scarf/flatten_scarf_0.40.usd" if usd_path is None else usd_path,
             friction=1.0,
             particle_adhesion_scale=1.0,
             particle_friction_scale=1.0,

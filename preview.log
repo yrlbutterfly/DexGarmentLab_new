@@ -1,0 +1,1186 @@
+Warning: running in conda env, please deactivate before executing this script
+If conda is desired please source setup_conda_env.sh in your python 3.10 conda env and run python normally
+[Info] [carb] Logging to file: /home/admin01/isaacsim_4.5.0/kit/logs/Kit/Isaac-Sim Python/4.5/kit_20251223_113721.log
+2025-12-23 03:37:21 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+[0.032s] [ext: omni.kit.async_engine-0.0.1] startup
+[0.276s] [ext: omni.metrics.core-0.0.1] startup
+[0.276s] [ext: omni.client.lib-1.0.0] startup
+[0.292s] [ext: omni.blobkey-1.1.2] startup
+[0.292s] [ext: omni.stats-1.0.1] startup
+[0.293s] [ext: omni.datastore-0.0.0] startup
+[0.297s] [ext: omni.client-1.2.2] startup
+[0.351s] [ext: omni.ujitso.default-1.0.0] startup
+[0.352s] [ext: omni.hsscclient-1.1.1] startup
+[0.355s] [ext: omni.gpu_foundation.shadercache.vulkan-1.0.0] startup
+[0.357s] [ext: omni.assets.plugins-0.0.0] startup
+[0.358s] [ext: omni.gpu_foundation-0.0.0] startup
+[0.362s] [ext: carb.windowing.plugins-1.0.0] startup
+[0.369s] [ext: omni.kit.renderer.init-0.0.0] startup
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 550.144.03    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA GeForce RTX 4090          | Yes: 0 |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2684      | 737eb298.. |
+|     |                                  |        |     |            | 2         |            |
+|=============================================================================================|
+| OS: 22.04.5 LTS (Jammy Jellyfish) ubuntu, Version: 22.04.5, Kernel: 6.8.0-90-generic
+| XServer Vendor: The X.Org Foundation, XServer Version: 12101004 (1.21.1.4)
+| Processor: Intel(R) Core(TM) i9-14900K
+| Cores: 24 | Logical Cores: 32
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 31692 | Free Memory: 22673
+| Total Page/Swap (MB): 2047 | Free Page/Swap: 2047
+|---------------------------------------------------------------------------------------------|
+2025-12-23 03:37:21 [686ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+[0.828s] [ext: omni.kit.pipapi-0.0.0] startup
+[0.829s] [ext: omni.kit.pip_archive-0.0.0] startup
+[0.829s] [ext: omni.pip.compute-1.4.5] startup
+[0.829s] [ext: omni.materialx.libs-1.0.6] startup
+[0.834s] [ext: omni.kit.telemetry-0.5.1] startup
+[0.849s] [ext: omni.pip.cloud-1.1.7] startup
+[0.851s] [ext: omni.isaac.core_archive-2.3.3] startup
+[0.851s] [ext: omni.usd.config-1.0.5] startup
+[0.853s] [ext: omni.gpucompute.plugins-0.0.0] startup
+[0.853s] [ext: omni.usd.libs-1.0.1] startup
+[0.900s] [ext: omni.isaac.ml_archive-2.1.2] startup
+[0.901s] [ext: omni.mdl-55.0.1] startup
+[0.914s] [ext: omni.iray.libs-0.0.0] startup
+[0.918s] [ext: omni.mdl.neuraylib-0.2.10] startup
+[0.919s] [ext: omni.kit.usd.mdl-1.0.7] startup
+[0.980s] [ext: omni.kit.loop-isaac-1.2.1] startup
+[0.981s] [ext: omni.kit.test-1.1.2] startup
+[1.011s] [ext: omni.appwindow-1.1.9] startup
+[1.012s] [ext: omni.kit.renderer.core-1.0.2] startup
+[1.022s] [ext: omni.kit.renderer.capture-0.0.0] startup
+[1.024s] [ext: omni.kit.renderer.imgui-1.0.2] startup
+[1.065s] [ext: omni.ui-2.26.5] startup
+[1.071s] [ext: omni.kit.mainwindow-1.0.3] startup
+[1.071s] [ext: carb.audio-0.1.0] startup
+[1.073s] [ext: omni.uiaudio-1.0.0] startup
+[1.074s] [ext: omni.kit.uiapp-0.0.0] startup
+[1.074s] [ext: omni.usd.schema.metrics.assembler-106.5.0] startup
+[1.079s] [ext: omni.usd.schema.anim-0.0.0] startup
+[1.096s] [ext: omni.usd.schema.isaac-3.0.2] startup
+[1.096s] [ext: omni.usd.schema.geospatial-0.0.0] startup
+[1.097s] [ext: omni.usd.schema.physx-106.5.7] startup
+[1.118s] [ext: omni.usd.schema.audio-0.0.0] startup
+[1.120s] [ext: omni.usd.schema.semantics-0.0.0] startup
+[1.122s] [ext: omni.usd_resolver-1.0.0] startup
+[1.124s] [ext: usdrt.scenegraph-7.5.1] startup
+[1.152s] [ext: omni.kit.actions.core-1.0.0] startup
+[1.153s] [ext: omni.timeline-1.0.11] startup
+[1.154s] [ext: omni.usd.core-1.4.2] startup
+[1.156s] [ext: omni.resourcemonitor-107.0.0] startup
+[1.157s] [ext: omni.activity.core-1.0.1] startup
+[1.158s] [ext: omni.kit.audiodeviceenum-1.0.1] startup
+[1.159s] [ext: omni.hydra.usdrt_delegate-7.5.1] startup
+[1.166s] [ext: omni.graph.exec-0.9.4] startup
+[1.167s] [ext: omni.kit.window.popup_dialog-2.0.24] startup
+[1.170s] [ext: omni.kit.exec.core-0.13.4] startup
+[1.172s] [ext: omni.kit.widget.nucleus_connector-1.1.10] startup
+[1.173s] [ext: omni.kit.usd_undo-0.1.8] startup
+[1.174s] [ext: omni.kit.commands-1.4.9] startup
+[1.176s] [ext: omni.hydra.scene_delegate-0.3.3] startup
+[1.180s] [ext: omni.usd-1.12.4] startup
+[1.213s] [ext: omni.kit.asset_converter-2.8.3] startup
+[1.219s] [ext: omni.usd.schema.omniscripting-1.0.0] startup
+[1.222s] [ext: omni.usd.schema.omnigraph-1.0.0] startup
+[1.226s] [ext: omni.usd.schema.forcefield-106.5.7] startup
+[1.229s] [ext: isaacsim.robot.schema-3.1.2] startup
+[1.233s] [ext: omni.inspect-1.0.1] startup
+[1.234s] [ext: omni.kit.notification_manager-1.0.9] startup
+[1.235s] [ext: omni.graph.core-2.181.8] startup
+[1.237s] [ext: isaacsim.core.deprecation_manager-0.2.2] startup
+[1.237s] [ext: omni.index.libs-380600.1777.0] startup
+[1.237s] [ext: omni.ujitso.processor.texture-1.0.0] startup
+[1.238s] [ext: omni.index-1.0.1] startup
+[1.238s] [ext: omni.kit.widget.path_field-2.0.11] startup
+[1.239s] [ext: omni.volume-0.5.0] startup
+[1.242s] [ext: omni.ujitso.client-0.0.0] startup
+[1.242s] [ext: omni.hydra.rtx.shadercache.vulkan-1.0.0] startup
+[1.243s] [ext: omni.kit.widget.browser_bar-2.0.10] startup
+[1.243s] [ext: omni.kit.clipboard-1.0.5] startup
+[1.244s] [ext: omni.hydra.rtx-1.0.0] startup
+2025-12-23 03:37:22 [1,237ms] [Warning] [omni.log] Source: omni.hydra was already registered.
+[1.255s] [ext: omni.kit.viewport.registry-104.0.6] startup
+[1.256s] [ext: omni.kit.helper.file_utils-0.1.9] startup
+[1.257s] [ext: omni.kit.widget.options_menu-1.1.6] startup
+[1.261s] [ext: omni.kit.menu.core-1.1.2] startup
+[1.262s] [ext: omni.kit.widget.filebrowser-2.10.52] startup
+[1.266s] [ext: omni.ui.scene-1.11.2] startup
+[1.269s] [ext: omni.kit.widget.options_button-1.0.3] startup
+[1.269s] [ext: omni.kit.widget.context_menu-1.2.4] startup
+[1.270s] [ext: omni.kit.viewport.legacy_gizmos-1.0.16] startup
+[1.271s] [ext: omni.kit.usd.layers-2.2.0] startup
+[1.276s] [ext: omni.kit.window.filepicker-2.11.7] startup
+[1.282s] [ext: omni.kit.hydra_texture-1.4.0] startup
+[1.285s] [ext: omni.kit.viewport.scene_camera_model-1.0.5] startup
+[1.288s] [ext: omni.kit.context_menu-1.8.3] startup
+[1.289s] [ext: omni.kit.window.file_importer-1.1.14] startup
+[1.290s] [ext: omni.kit.menu.utils-1.7.7] startup
+[1.295s] [ext: omni.kit.widget.viewport-107.0.7] startup
+[1.297s] [ext: omni.kit.window.drop_support-1.0.4] startup
+[1.297s] [ext: omni.kit.raycast.query-1.0.5] startup
+[1.300s] [ext: omni.kit.material.library-1.5.15] startup
+[1.303s] [ext: omni.hydra.engine.stats-1.0.3] startup
+[1.304s] [ext: omni.kit.viewport.window-107.0.8] startup
+[1.315s] [ext: omni.warp.core-1.5.0] startup
+[1.505s] [ext: omni.kit.viewport.utility-1.0.18] startup
+[1.505s] [ext: omni.kit.hotkeys.core-1.3.10] startup
+[1.506s] [ext: omni.kit.widget.prompt-1.0.7] startup
+[1.507s] [ext: omni.kit.usd.collect-2.2.22] startup
+[1.508s] [ext: omni.kit.window.content_browser_registry-0.0.6] startup
+[1.509s] [ext: omni.graph.tools-1.79.1] startup
+[1.523s] [ext: omni.kit.window.file_exporter-1.0.31] startup
+[1.523s] [ext: omni.kit.stage_template.core-1.1.22] startup
+[1.524s] [ext: omni.graph.image.core-0.6.0] startup
+[1.525s] [ext: omni.graph.action_core-1.1.7] startup
+[1.526s] [ext: omni.graph-1.140.2] startup
+[1.552s] [ext: omni.kit.window.file-1.3.57] startup
+[1.555s] [ext: omni.kit.widget.filter-1.1.4] startup
+[1.556s] [ext: omni.graph.image.nodes-1.3.0] startup
+[1.560s] [ext: omni.graph.action_nodes-1.40.1] startup
+[1.562s] [ext: omni.kit.window.content_browser-2.10.3] startup
+[1.576s] [ext: omni.kvdb-106.5.7] startup
+[1.578s] [ext: omni.graph.action-1.120.0] startup
+[1.579s] [ext: omni.kit.tool.collect-2.2.16] startup
+[1.582s] [ext: omni.graph.nodes-1.162.1] startup
+[1.590s] [ext: omni.kit.widget.searchfield-1.1.8] startup
+[1.594s] [ext: omni.localcache-106.5.7] startup
+[1.602s] [ext: omni.convexdecomposition-106.5.7] startup
+[1.610s] [ext: omni.kit.widget.stage_icons-1.0.6] startup
+[1.613s] [ext: omni.kit.widget.stage-2.11.6] startup
+[1.623s] [ext: omni.usdphysics-106.5.7] startup
+[1.625s] [ext: omni.physx.foundation-106.5.7] startup
+[1.626s] [ext: omni.physics.tensors-106.5.7] startup
+[1.633s] [ext: omni.kit.window.stage-2.5.11] startup
+[1.636s] [ext: omni.kit.property.adapter.core-1.0.2] startup
+[1.637s] [ext: omni.physx.cooking-106.5.7] startup
+[1.642s] [ext: omni.kit.widget.zoombar-1.0.5] startup
+[1.643s] [ext: omni.kit.widget.highlight_label-1.0.3] startup
+[1.644s] [ext: omni.kit.property.adapter.usd-1.0.2] startup
+[1.646s] [ext: omni.kit.property.adapter.fabric-1.0.3] startup
+[1.647s] [ext: omni.physx-106.5.7] startup
+[1.655s] [ext: omni.kit.browser.core-2.3.11] startup
+[1.658s] [ext: omni.kit.window.property-1.11.5] startup
+[1.660s] [ext: omni.kit.widget.text_editor-1.0.2] startup
+[1.661s] [ext: omni.kit.property.usd-4.2.16] startup
+[1.667s] [ext: omni.physx.tensors-106.5.7] startup
+[1.669s] [ext: omni.kit.menu.stage-1.2.5] startup
+[1.670s] [ext: omni.kit.browser.folder.core-1.10.1] startup
+[1.676s] [ext: omni.warp-1.5.0] startup
+[1.681s] [ext: isaacsim.examples.browser-0.1.8] startup
+[1.684s] [ext: omni.physx.stageupdate-106.5.7] startup
+[1.686s] [ext: omni.kit.numpy.common-0.1.2] startup
+[1.688s] [ext: isaacsim.core.version-2.0.2] startup
+[1.689s] [ext: omni.isaac.dynamic_control-1.3.15] startup
+2025-12-23 03:37:22 [1,682ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+[1.693s] [ext: isaacsim.storage.native-1.0.6] startup
+[1.695s] [ext: omni.kit.menu.create-1.0.17] startup
+[1.697s] [ext: isaacsim.core.utils-2.2.8] startup
+[1.699s] [ext: omni.kit.widget.searchable_combobox-1.0.6] startup
+[1.702s] [ext: omni.kit.primitive.mesh-1.0.17] startup
+[1.722s] [ext: isaacsim.core.simulation_manager-0.3.3] startup
+[2.599s] [ext: omni.kit.scripting-106.5.2] startup
+[2.603s] [ext: omni.kit.stage_templates-1.2.6] startup
+[2.605s] [ext: isaacsim.core.prims-0.3.7] startup
+[2.618s] [ext: isaacsim.replicator.behavior-1.0.8] startup
+[2.620s] [ext: isaacsim.core.api-4.2.16] startup
+[2.628s] [ext: omni.ui_query-1.1.7] startup
+[2.629s] [ext: omni.kit.manipulator.viewport-107.0.1] startup
+[2.631s] [ext: omni.kit.ui_test-1.3.3] startup
+[2.633s] [ext: omni.kit.window.extensions-1.4.25] startup
+[2.638s] [ext: omni.graph.visualization.nodes-2.1.1] startup
+[2.642s] [ext: omni.kit.tool.asset_importer-2.12.2] startup
+[2.652s] [ext: isaacsim.gui.components-1.0.9] startup
+[2.658s] [ext: omni.kit.widget.settings-1.2.2] startup
+[2.662s] [ext: omni.kit.widget.graph-1.12.17] startup
+[2.669s] [ext: omni.kit.window.preferences-1.7.0] startup
+[2.685s] [ext: omni.kit.graph.delegate.default-1.2.2] startup
+[2.686s] [ext: omni.kit.viewport.menubar.core-107.1.2] startup
+[2.712s] [ext: omni.kit.widget.material_preview-1.0.16] startup
+[2.716s] [ext: omni.kit.graph.usd.commands-1.3.1] startup
+[2.720s] [ext: omni.kit.graph.editor.core-1.5.3] startup
+[2.724s] [ext: omni.syntheticdata-0.6.10] startup
+[2.759s] [ext: omni.kit.window.material_graph-1.8.19] startup
+[2.791s] [ext: omni.graph.scriptnode-1.40.1] startup
+[2.798s] [ext: isaacsim.core.cloner-1.3.4] startup
+[2.804s] [ext: omni.replicator.core-1.11.35] startup
+2025-12-23 03:37:24 [2,884ms] [Warning] [omni.replicator.core.scripts.extension] No material configuration file, adding configuration to material settings directly.
+[2.898s] [ext: omni.isaac.cloner-1.0.2] startup
+2025-12-23 03:37:24 [2,888ms] [Warning] [omni.isaac.cloner] omni.isaac.cloner has been deprecated in favor of isaacsim.core.cloner. Please update your code accordingly.
+[2.900s] [ext: isaacsim.core.nodes-2.1.4] startup
+[2.908s] [ext: isaacsim.asset.importer.urdf-2.3.10] startup
+[2.983s] [ext: omni.isaac.core-4.0.3] startup
+2025-12-23 03:37:24 [2,975ms] [Warning] [omni.isaac.core.physics_context.physics_context] omni.isaac.core.physics_context.physics_context has been deprecated in favor of isaacsim.core.api.physics_context.physics_context. Please update your code accordingly.
+2025-12-23 03:37:24 [2,975ms] [Warning] [omni.isaac.core.simulation_context.simulation_context] omni.isaac.core.simulation_context.simulation_context has been deprecated in favor of isaacsim.core.api.simulation_context.simulation_context. Please update your code accordingly.
+2025-12-23 03:37:24 [2,976ms] [Warning] [omni.isaac.core.world.world] omni.isaac.core.world.world has been deprecated in favor of isaacsim.core.api.world.world. Please update your code accordingly.
+2025-12-23 03:37:24 [2,976ms] [Warning] [omni.isaac.core] omni.isaac.core has been deprecated in favor of isaacsim.core.api. Please update your code accordingly.
+[2.990s] [ext: omni.isaac.core_nodes-2.0.2] startup
+2025-12-23 03:37:24 [2,984ms] [Warning] [omni.isaac.core_nodes] omni.isaac.core_nodes has been deprecated in favor of isaacsim.core.nodes. Please update your code accordingly.
+[2.995s] [ext: omni.anim.curve.core-1.2.0] startup
+[3.011s] [ext: isaacsim.robot_motion.lula-4.0.4] startup
+[3.019s] [ext: isaacsim.asset.importer.mjcf-2.3.3] startup
+[3.028s] [ext: isaacsim.robot_motion.motion_generation-8.0.6] startup
+[3.043s] [ext: isaacsim.asset.browser-1.3.4] startup
+[3.120s] [ext: isaacsim.robot.surface_gripper-2.0.6] startup
+[3.123s] [ext: omni.kit.selection-0.1.5] startup
+[3.126s] [ext: isaacsim.robot_motion.lula_test_widget-1.0.5] startup
+[3.128s] [ext: omni.isaac.assets_check-0.3.9] startup
+2025-12-23 03:37:24 [3,118ms] [Warning] [omni.isaac.assets_check] omni.isaac.assets_check has been deprecated in favor of isaacsim.asset.browser. Please update your code accordingly.
+[3.129s] [ext: isaacsim.robot.manipulators-3.0.4] startup
+[3.135s] [ext: isaacsim.sensors.physics-0.3.5] startup
+[3.150s] [ext: isaacsim.gui.menu-2.0.9] startup
+[3.180s] [ext: omni.isaac.lula_test_widget-1.0.2] startup
+2025-12-23 03:37:24 [3,173ms] [Warning] [omni.isaac.lula_test_widget] omni.isaac.lula_test_widget has been deprecated in favor of isaacsim.robot_motion.lula_test_widget. Please update your code accordingly.
+[3.186s] [ext: omni.sensors.nv.common-2.5.0-coreapi] startup
+[3.203s] [ext: omni.isaac.manipulators-3.0.3] startup
+2025-12-23 03:37:24 [3,193ms] [Warning] [omni.isaac.manipulators] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.controllers] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.controllers.pick_place_controller] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.controllers.stacking_controller] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.grippers] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.grippers.gripper] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.grippers.parallel_gripper] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.grippers.surface_gripper] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.manipulators] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+2025-12-23 03:37:24 [3,194ms] [Warning] [omni.isaac.manipulators.manipulators.single_manipulator] omni.isaac.manipulators has been deprecated in favor of isaacsim.robot.manipulators. Please update your code accordingly.
+[3.205s] [ext: isaacsim.robot.policy.examples-4.0.3] startup
+[3.208s] [ext: omni.isaac.menu-1.0.2] startup
+2025-12-23 03:37:24 [3,198ms] [Warning] [omni.isaac.menu] omni.isaac.menu has been deprecated in favor of isaacsim.gui.menu. Please update your code accordingly.
+[3.209s] [ext: omni.isaac.motion_generation-8.0.2] startup
+2025-12-23 03:37:24 [3,199ms] [Warning] [omni.isaac.motion_generation] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,199ms] [Warning] [omni.isaac.motion_generation.articulation_kinematics_solver] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,199ms] [Warning] [omni.isaac.motion_generation.articulation_motion_policy] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,200ms] [Warning] [omni.isaac.motion_generation.articulation_trajectory] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.kinematics_interface] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.lula] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.lula.kinematics] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.lula.motion_policies] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.lula.path_planners] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.lula.trajectory_generator] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.motion_policy_controller] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.motion_policy_interface] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.path_planner_visualizer] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.path_planning_interface] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.trajectory] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+2025-12-23 03:37:24 [3,201ms] [Warning] [omni.isaac.motion_generation.world_interface] omni.isaac.motion_generation has been deprecated in favor of isaacsim.robot_motion.motion_generation. Please update your code accordingly.
+[3.213s] [ext: omni.sensors.nv.materials-1.4.0-coreapi] startup
+[3.215s] [ext: omni.isaac.nucleus-1.0.3] startup
+2025-12-23 03:37:24 [3,205ms] [Warning] [omni.isaac.nucleus] omni.isaac.nucleus has been deprecated in favor of isaacsim.storage.native. Please update your code accordingly.
+2025-12-23 03:37:24 [3,205ms] [Warning] [omni.isaac.nucleus.nucleus] omni.isaac.nucleus.nucleus has been deprecated in favor of isaacsim.storage.native. Please update your code accordingly.
+[3.216s] [ext: omni.isaac.quadruped-3.0.2] startup
+2025-12-23 03:37:24 [3,206ms] [Warning] [omni.isaac.quadruped] omni.isaac.quadruped has been deprecated in favor of isaacsim.robot.policy.examples. Please update your code accordingly.
+[3.217s] [ext: omni.kit.manipulator.selector-1.1.1] startup
+[3.219s] [ext: omni.sensors.nv.wpm-2.4.0-coreapi] startup
+[3.222s] [ext: omni.sensors.nv.lidar-2.6.3-coreapi] startup
+[3.226s] [ext: omni.sensors.nv.ids-1.4.0-coreapi] startup
+[3.230s] [ext: isaacsim.robot.manipulators.examples-1.0.3] startup
+[3.230s] [ext: isaacsim.util.debug_draw-2.0.2] startup
+[3.234s] [ext: omni.sensors.tiled-0.0.6] startup
+[3.235s] [ext: omni.sensors.nv.radar-2.6.1-coreapi] startup
+[3.239s] [ext: omni.kit.widget.toolbar-1.7.3] startup
+[3.250s] [ext: omni.kit.manipulator.transform-106.0.1] startup
+[3.256s] [ext: isaacsim.sensors.physx-2.2.4] startup
+[3.262s] [ext: isaacsim.sensors.rtx-13.6.3] startup
+[3.273s] [ext: isaacsim.sensors.camera-0.2.9] startup
+[3.287s] [ext: isaacsim.cortex.framework-1.0.2] startup
+[3.291s] [ext: omni.kit.manipulator.tool.snap-1.5.12] startup
+[3.318s] [ext: omni.isaac.range_sensor-4.0.2] startup
+[3.321s] [ext: omni.isaac.surface_gripper-2.0.2] startup
+2025-12-23 03:37:24 [3,313ms] [Warning] [omni.isaac.surface_gripper] omni.isaac.surface_gripper has been deprecated in favor of isaacsim.robot.surface_gripper. Please update your code accordingly.
+[3.325s] [ext: omni.isaac.sensor-13.0.3] startup
+2025-12-23 03:37:24 [3,317ms] [Warning] [omni.isaac.sensor] omni.isaac.sensor has been deprecated in favor of isaacsim.sensors.camera, isaacsim.sensors.physics, isaacsim.sensors.physx, and isaacsim.sensors.rtx. Please update your code accordingly.
+2025-12-23 03:37:24 [3,317ms] [Warning] [omni.isaac.sensor.camera] omni.isaac.sensor.camera has been deprecated in favor of isaacsim.sensors.camera.camera. Please update your code accordingly.
+2025-12-23 03:37:24 [3,318ms] [Warning] [omni.isaac.sensor.camera_view] omni.isaac.sensor.camera_view has been deprecated in favor of isaacsim.sensors.camera.camera_view. Please update your code accordingly.
+2025-12-23 03:37:24 [3,318ms] [Warning] [omni.isaac.sensor.commands] omni.isaac.sensor.commands has been deprecated in favor of isaacsim.sensors.physics.commands, isaacsim.sensors.physx.commands, and isaacsim.sensors.rtx.commands. Please update your code accordingly.
+2025-12-23 03:37:24 [3,318ms] [Warning] [omni.isaac.sensor.contact_sensor] omni.isaac.sensor.contact_sensor has been deprecated in favor of isaacsim.sensors.physics.contact_sensor. Please update your code accordingly.
+2025-12-23 03:37:24 [3,318ms] [Warning] [omni.isaac.sensor.imu_sensor] omni.isaac.sensor.imu_sensor has been deprecated in favor of isaacsim.sensors.physics.imu_sensor. Please update your code accordingly.
+2025-12-23 03:37:24 [3,318ms] [Warning] [omni.isaac.sensor.lidar_rtx] omni.isaac.sensor.lidar_rtx has been deprecated in favor of isaacsim.sensors.rtx.lidar_rtx. Please update your code accordingly.
+2025-12-23 03:37:24 [3,319ms] [Warning] [omni.isaac.sensor.rotating_lidar_physX] omni.isaac.sensor.imu_sensor has been deprecated in favor of isaacsim.sensors.physix.rotating_lidar_physX. Please update your code accordingly.
+2025-12-23 03:37:24 [3,319ms] [Warning] [omni.isaac.sensor.scripts.samples.contact_sensor] omni.isaac.sensor.scripts.samples.contact_sensor has been deprecated in favor of isaacsim.sensors.physics.scripts.samples.contact_sensor. Please update your code accordingly.
+2025-12-23 03:37:24 [3,319ms] [Warning] [omni.isaac.sensor.scripts.samples.imu_sensor] omni.isaac.sensor.scripts.samples.imu_sensor has been deprecated in favor of isaacsim.sensors.physics.scripts.samples.imu_sensor. Please update your code accordingly.
+2025-12-23 03:37:24 [3,320ms] [Warning] [omni.isaac.sensor.scripts.samples.lightbeam_sensor] omni.isaac.sensor.scripts.samples.lightbeam_sensor has been deprecated in favor of isaacsim.sensors.physx.scripts.samples.lightbeam_sensor. Please update your code accordingly.
+[3.335s] [ext: omni.isaac.cortex-1.0.2] startup
+2025-12-23 03:37:24 [3,325ms] [Warning] [omni.isaac.cortex] omni.isaac.cortex has been deprecated in favor of isaacsim.cortex.framework. Please update your code accordingly.
+[3.336s] [ext: omni.kit.viewport.manipulator.transform-107.0.4] startup
+[3.353s] [ext: omni.debugdraw-0.1.3] startup
+[3.358s] [ext: omni.isaac.universal_robots-1.0.2] startup
+2025-12-23 03:37:24 [3,348ms] [Warning] [omni.isaac.universal_robots] omni.isaac.universal_robots has been deprecated in favor of isaacsim.robot.manipulators.examples.universal_robots. Please update your code accordingly.
+2025-12-23 03:37:24 [3,348ms] [Warning] [omni.isaac.universal_robots.kinematics_solver] omni.isaac.franka has been deprecated in favor of isaacsim.robot.manipulators.examples.universal_robots. Please update your code accordingly.
+2025-12-23 03:37:24 [3,349ms] [Warning] [omni.isaac.universal_robots.ur10] omni.isaac.franka has been deprecated in favor of isaacsim.robot.manipulators.examples.universal_robots. Please update your code accordingly.
+[3.360s] [ext: omni.isaac.utils-2.0.2] startup
+[3.364s] [ext: omni.kit.manipulator.prim.core-107.0.7] startup
+[3.376s] [ext: omni.fabric.commands-1.1.5] startup
+[3.380s] [ext: omni.kit.manipulator.selection-106.0.1] startup
+[3.383s] [ext: omni.kit.viewport.actions-107.0.0] startup
+[3.386s] [ext: omni.kit.manipulator.prim.usd-107.0.3] startup
+[3.387s] [ext: omni.kit.manipulator.prim.fabric-107.0.4] startup
+[3.389s] [ext: isaacsim.cortex.behaviors-2.0.3] startup
+[3.390s] [ext: omni.kit.widget.layers-1.8.2] startup
+[3.402s] [ext: omni.kit.viewport.menubar.display-107.0.3] startup
+[3.404s] [ext: omni.kit.manipulator.prim-107.0.0] startup
+[3.405s] [ext: omni.isaac.cortex.sample_behaviors-2.0.2] startup
+2025-12-23 03:37:24 [3,395ms] [Warning] [omni.isaac.cortex.sample_behaviors] omni.isaac.cortex.sample_behaviors has been deprecated in favor of isaacsim.cortex.behaviors. Please update your code accordingly.
+[3.406s] [ext: omni.graph.ui_nodes-1.40.1] startup
+[3.411s] [ext: omni.usdphysics.ui-106.5.7] startup
+[3.439s] [ext: omni.physx.commands-106.5.7] startup
+[3.442s] [ext: omni.kit.property.camera-1.0.9] startup
+[3.444s] [ext: omni.hydra.scene_api-0.1.2] startup
+[3.447s] [ext: omni.kit.property.geometry-1.3.3] startup
+[3.452s] [ext: omni.kit.property.light-1.0.11] startup
+[3.455s] [ext: omni.physx.ui-106.5.7] startup
+[3.486s] [ext: omni.kit.property.material-1.10.17] startup
+[3.491s] [ext: omni.kit.property.render-1.1.3] startup
+[3.492s] [ext: omni.kit.property.transform-1.5.10] startup
+[3.494s] [ext: omni.kit.property.audio-1.0.16] startup
+[3.496s] [ext: isaacsim.gui.property-1.0.4] startup
+[3.498s] [ext: omni.physx.demos-106.5.7] startup
+[3.512s] [ext: omni.kit.property.physx-106.5.7] startup
+[3.583s] [ext: omni.isaac.lula-4.0.2] startup
+2025-12-23 03:37:24 [3,573ms] [Warning] [omni.isaac.lula] omni.isaac.lula has been deprecated in favor of isaacsim.robot_motion.lula. Please update your code accordingly.
+[3.584s] [ext: omni.kit.property.bundle-1.3.2] startup
+[3.585s] [ext: omni.kit.property.isaac-1.0.2] startup
+2025-12-23 03:37:24 [3,575ms] [Warning] [omni.kit.property.isaac] omni.kit.property.isaac has been deprecated in favor of isaacsim.gui.property. Please update your code accordingly.
+2025-12-23 03:37:24 [3,575ms] [Warning] [omni.kit.property.isaac.widgets] omni.kit.property.isaac.widgets has been deprecated in favor of isaacsim.gui.property.widgets. Please update your code accordingly.
+[3.587s] [ext: omni.physx.vehicle-106.5.7] startup
+[3.601s] [ext: omni.kit.viewport.menubar.camera-107.0.2] startup
+[3.606s] [ext: omni.kit.viewport.menubar.lighting-106.0.2] startup
+[3.608s] [ext: omni.kit.viewport.menubar.render-107.0.8] startup
+[3.610s] [ext: omni.kit.viewport.menubar.settings-107.0.3] startup
+[3.613s] [ext: omni.kit.window.console-0.2.14] startup
+[3.621s] [ext: omni.physx.camera-106.5.7] startup
+[3.636s] [ext: omni.kit.window.toolbar-1.6.2] startup
+[3.640s] [ext: omni.isaac.version-2.0.2] startup
+2025-12-23 03:37:24 [3,630ms] [Warning] [omni.isaac.version] omni.isaac.version has been deprecated in favor of isaacsim.core.version. Please update your code accordingly.
+[3.641s] [ext: isaacsim.robot.wheeled_robots-4.0.3] startup
+[3.646s] [ext: omni.physx.cct-106.5.7] startup
+[3.672s] [ext: omni.physx.graph-106.5.7] startup
+[3.709s] [ext: isaacsim.replicator.writers-1.0.1] startup
+[3.777s] [ext: omni.physx.supportui-106.5.7] startup
+[3.817s] [ext: omni.physx.telemetry-106.5.7] startup
+[3.822s] [ext: omni.isaac.wheeled_robots-3.0.3] startup
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.controllers] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.controllers.ackermann_controller] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.controllers.differential_controller] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.controllers.holonomic_controller] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.controllers.quintic_path_planner] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.controllers.stanley_control] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.controllers.wheel_base_pose_controller] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.impl] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,812ms] [Warning] [omni.isaac.wheeled_robots.robots] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,813ms] [Warning] [omni.isaac.wheeled_robots.robots.holonomic_robot_usd_setup] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+2025-12-23 03:37:25 [3,813ms] [Warning] [omni.isaac.wheeled_robots.robots.wheeled_robot] omni.isaac.wheeled_robots has been deprecated in favor of isaacsim.robot.wheeled_robots. Please update your code accordingly.
+[3.824s] [ext: omni.isaac.franka-1.0.2] startup
+2025-12-23 03:37:25 [3,814ms] [Warning] [omni.isaac.franka] omni.isaac.franka has been deprecated in favor of isaacsim.robot.manipulators.examples.franka. Please update your code accordingly.
+2025-12-23 03:37:25 [3,814ms] [Warning] [omni.isaac.franka.franka] omni.isaac.franka has been deprecated in favor of isaacsim.robot.manipulators.examples.franka. Please update your code accordingly.
+2025-12-23 03:37:25 [3,815ms] [Warning] [omni.isaac.franka.kinematics_solver] omni.isaac.franka has been deprecated in favor of isaacsim.robot.manipulators.examples.franka. Please update your code accordingly.
+[3.826s] [ext: isaacsim.replicator.domain_randomization-1.0.2] startup
+[3.828s] [ext: isaacsim.replicator.examples-1.1.2] startup
+[3.831s] [ext: omni.kit.window.status_bar-0.1.7] startup
+[3.838s] [ext: omni.rtx.window.settings-0.6.17] startup
+[3.860s] [ext: omni.usd.metrics.assembler-106.5.0] startup
+[3.872s] [ext: omni.physx.bundle-106.5.7] startup
+[3.872s] [ext: isaacsim.app.about-2.0.7] startup
+[3.873s] [ext: omni.replicator.isaac-2.0.3] startup
+2025-12-23 03:37:25 [3,863ms] [Warning] [omni.replicator.isaac] omni.replicator.isaac has been deprecated in favor of isaacsim.replicator.domain_randomization, isaacsim.replicator.examples, isaacsim.replicator.writers. Please update your code accordingly.
+[3.875s] [ext: omni.replicator.replicator_yaml-2.0.10] startup
+[3.888s] [ext: omni.rtx.settings.core-0.6.3] startup
+[3.893s] [ext: omni.usd.metrics.assembler.ui-106.5.0] startup
+[3.898s] [ext: isaacsim.simulation_app-2.4.2] startup
+[3.899s] [ext: omni.isaac.window.about-2.0.2] startup
+2025-12-23 03:37:25 [3,889ms] [Warning] [omni.isaac.window.about] omni.isaac.window.about has been deprecated in favor of isaacsim.app.about. Please update your code accordingly.
+2025-12-23 03:37:25 [3,889ms] [Warning] [omni.isaac.window.about.about] omni.isaac.window.about.about has been deprecated in favor of isaacsim.app.about.about. Please update your code accordingly.
+[3.900s] [ext: semantics.schema.editor-0.3.10] startup
+[3.902s] [ext: omni.kit.ui.actions-1.0.2] startup
+[3.903s] [ext: semantics.schema.property-1.0.5] startup
+[3.904s] [ext: omni.kit.manipulator.camera-106.0.3] startup
+[3.907s] [ext: omni.isaac.kit-2.0.3] startup
+2025-12-23 03:37:25 [3,896ms] [Warning] [omni.isaac.kit] omni.isaac.kit has been deprecated in favor of isaacsim.simulation_app. Please update your code accordingly.
+[3.907s] [ext: omni.isaac.asset_browser-1.0.2] startup
+2025-12-23 03:37:25 [3,897ms] [Warning] [omni.isaac.asset_browser] omni.isaac.asset_browser has been deprecated in favor of isaacsim.asset.browser. Please update your code accordingly.
+[3.908s] [ext: isaacsim.core.throttling-2.0.2] startup
+[3.909s] [ext: omni.kit.menu.common-1.1.9] startup
+[3.911s] [ext: isaacsim.exp.base-4.5.0] startup
+[3.911s] [ext: isaacsim.exp.base.python-4.5.0] startup
+[3.912s] Simulation App Starting
+[4.016s] app ready
+2025-12-23 03:37:25 [4,061ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 7374781440
+2025-12-23 03:37:25 [4,061ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid false, within: false
+2025-12-23 03:37:25 [4,061ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : decrement: 167690, decrement size: 7301033856
+2025-12-23 03:37:25 [4,061ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : New limit 9748724 (slope: 439, intercept: 13179904)
+2025-12-23 03:37:25 [4,061ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 4287352704
+2025-12-23 03:37:25 [4,061ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid true, within: true
+2025-12-23 03:37:25 [4,146ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
+2025-12-23 03:37:25 [4,182ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults/post/dlss/execMode'
+[6.272s] Simulation App Startup Complete
+2025-12-23 03:37:28 [7,415ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:37:29 [8,011ms] [Warning] [omni.hydra] Mesh '/World/Garment/garment/mesh' update topology/point without updating normal, fallback to smooth normal.
+2025-12-23 03:37:29 [8,422ms] [Warning] [rtx.postprocessing.plugin] DLSS increasing input dimensions: Render resolution of (320, 240) is below minimal input resolution of 300.
+2025-12-23 03:37:29 [8,439ms] [Warning] [omni.syntheticdata.plugin] OgnSdPostRenderVarToHost : rendervar copy from texture directly to host buffer is counter-performant. Please use copy from texture to device buffer first.
+2025-12-23 03:37:33 [11,896ms] [Warning] [omni.fabric.plugin] removePath called on non-existent path /World/Garment/garment/visual_material 
+
+2025-12-23 03:37:33 [11,900ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:37:37 [16,185ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:37:41 [20,761ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:37:46 [25,333ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:37:50 [29,686ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:37:55 [34,066ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:37:59 [38,396ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:03 [42,784ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:08 [47,190ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:12 [51,615ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:17 [55,929ms] [Warning] [isaacsim.core.priStarting kit application with the following args:  ['/home/admin01/isaacsim_4.5.0/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py', '/home/admin01/isaacsim_4.5.0/apps/isaacsim.exp.base.python.kit', '--/app/tokens/exe-path=/home/admin01/isaacsim_4.5.0/kit', '--/persistent/app/viewport/displayOptions=3094', '--/rtx/materialDb/syncLoads=True', '--/rtx/hydra/materialSyncLoads=True', '--/omni.kit.plugin/syncUsdLoads=True', '--/app/renderer/resolution/width=1280', '--/app/renderer/resolution/height=720', '--/app/window/width=1440', '--/app/window/height=900', '--/renderer/multiGpu/enabled=True', '--/app/fastShutdown=True', '--/app/installSignalHandlers=0', '--ext-folder', '/home/admin01/isaacsim_4.5.0/exts', '--ext-folder', '/home/admin01/isaacsim_4.5.0/apps', '--/physics/cudaDevice=0', '--portable', '--no-window', '--/app/window/hideUi=1']
+Passing the following args to the base kit application:  []
+Warp 1.5.0 initialized:
+   CUDA Toolkit 11.8, Driver 12.4
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA GeForce RTX 4090" (24 GiB, sm_89, mempool enabled)
+   Kernel cache:
+     /home/admin01/.cache/warp/1.5.0
+Total garments in list: 150
+[1/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_014/TCLC_model2_014_obj.usd
+garment
+/World/Garment/garment
+Module omni.replicator.core.ogn.python._impl.nodes.OgnSemanticSegmentation a0ffa74 load on device 'cuda:0' took 0.40 ms  (cached)
+Module omni.replicator.core.ogn.python._impl.nodes.OgnPointCloudGenerator 1f4060b load on device 'cuda:0' took 0.25 ms  (cached)
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/001_TCLC_model2_014_obj.png
+[2/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top608/TCLC_Top608_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/002_TCLC_Top608_obj.png
+[3/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket057/TCLC_Jacket057_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/003_TCLC_Jacket057_obj.png
+[4/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jumper001/TCLC_Jumper001_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/004_TCLC_Jumper001_obj.png
+[5/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket052/TCLC_Jacket052_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/005_TCLC_Jacket052_obj.png
+[6/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket114/TCLC_Jacket114_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/006_TCLC_Jacket114_obj.png
+[7/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Sweater010/TCLC_Sweater010_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/007_TCLC_Sweater010_obj.png
+[8/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket162/TCLC_Jacket162_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/008_TCLC_Jacket162_obj.png
+[9/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket020/TCLC_Jacket020_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/009_TCLC_Jacket020_obj.png
+[10/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_015/TCLC_model2_015_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/010_TCLC_model2_015_obj.png
+[11/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top578/TCLC_Top578_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/011_TCLC_Top578_obj.png
+[12/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_066/TCLC_066_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/012_TCLC_066_obj.png
+[13/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket157/TCLC_Jacket157_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/013_TCLC_Jacket157_obj.png
+[14/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Normal_Model_003/TCLC_Normal_Model_003_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/014_TCLC_Normal_Model_003_obj.png
+[15/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top565/TCLC_Top565_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/015_TCLC_Top565_obj.png
+[16/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket150/TCLC_Jacket150_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/016_TCLC_Jacket150_obj.png
+[17/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_071/TCLC_model2_071_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/017_TCLC_model2_071_obj.png
+[18/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Sweater009/TCLC_Sweater009_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/018_TCLC_Sweater009_obj.png
+[19/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_002/TCLC_002_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/019_TCLC_002_obj.png
+[20/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top3/TCLC_top3_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/020_TCLC_top3_obj.png
+[21/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Normal_Model_058/TCLC_Normal_Model_058_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/021_TCLC_Normal_Model_058_obj.png
+[22/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top415/TCLC_Top415_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/022_TCLC_Top415_obj.png
+[23/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Shirt018/TCLC_Shirt018_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/023_TCLC_Shirt018_obj.png
+[24/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_081/TCLC_model2_081_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/024_TCLC_model2_081_obj.png
+[25/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Normal_Model_002/TCLC_Normal_Model_002_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/025_TCLC_Normal_Model_002_obj.png
+ms.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:21 [60,264ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:25 [64,578ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:30 [68,837ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:34 [73,300ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:38 [77,554ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:43 [81,979ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:47 [86,392ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:52 [91,093ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:38:56 [95,559ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:01 [100,020ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:05 [104,297ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:09 [108,694ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:14 [113,081ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:18 [117,569ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:23 [121,985ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:27 [126,485ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:32 [130,910ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:36 [135,295ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:40 [139,710ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:47 [145,978ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:51 [150,364ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:39:55 [154,747ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:00 [159,218ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:05 [163,963ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:09 [168,379ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:14 [172,797ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:18 [177,005ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:22 [181,361ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:27 [186,525ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:32 [190,868ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:36 [195,236ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:40 [199,580ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:45 [203,933ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:49 [208,299ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:53 [212,645ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:40:58 [216,981ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:02 [221,348ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:06 [225,638ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:11 [229,906ms] [26/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_070/TCLC_model2_070_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/026_TCLC_model2_070_obj.png
+[27/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_074/TCLC_074_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/027_TCLC_074_obj.png
+[28/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top144/TCLC_Top144_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/028_TCLC_Top144_obj.png
+[29/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top012_0/TCLC_Top012_0_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/029_TCLC_Top012_0_obj.png
+[30/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket117/TCLC_Jacket117_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/030_TCLC_Jacket117_obj.png
+[31/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_037/TCLC_model2_037_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/031_TCLC_model2_037_obj.png
+[32/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top654/TCLC_Top654_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/032_TCLC_Top654_obj.png
+[33/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top613/TCLC_Top613_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/033_TCLC_Top613_obj.png
+[34/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket070/TCLC_Jacket070_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/034_TCLC_Jacket070_obj.png
+[35/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_003/TCLC_003_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/035_TCLC_003_obj.png
+[36/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top6/TCLC_top6_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/036_TCLC_top6_obj.png
+[37/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top653/TCLC_Top653_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/037_TCLC_Top653_obj.png
+[38/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket073/TCLC_Jacket073_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/038_TCLC_Jacket073_obj.png
+[39/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top337/TCLC_Top337_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/039_TCLC_Top337_obj.png
+[40/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Shirt006/TCLC_Shirt006_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/040_TCLC_Shirt006_obj.png
+[41/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_023/TCLC_model2_023_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/041_TCLC_model2_023_obj.png
+[42/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_014/TCLC_014_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/042_TCLC_014_obj.png
+[43/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_007/TCLC_007_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/043_TCLC_007_obj.png
+[44/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top4/TCLC_top4_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/044_TCLC_top4_obj.png
+[45/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Tshirt1/TCLC_Tshirt1_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/045_TCLC_Tshirt1_obj.png
+[46/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket158/TCLC_Jacket158_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/046_TCLC_Jacket158_obj.png
+[47/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket130/TCLC_Jacket130_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/047_TCLC_Jacket130_obj.png
+[48/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_047/TCLC_047_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/048_TCLC_047_obj.png
+[49/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket153/TCLC_Jacket153_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/049_TCLC_Jacket153_obj.png
+[50/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket149/TCLC_Jacket149_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/050_TCLC_Jacket149_obj.png
+[51/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_044/TCLC_model2_044_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/051_TCLC_model2_044_obj.png
+[52/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket005_1/TCLC_Jacket005_1_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/052_TCLC_Jacket005_1_obj.png
+[53/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top609/TCLC_Top609_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/053_TCLC_Top609_obj.png
+[54/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket032/TCLC_Jacket032_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/054_TCLC_Jacket032_obj.png
+[55/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top237/TCLC_Top237_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/055_TCLC_Top237_obj.png
+[56/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_082/TCLC_082_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/056_TCLC_082_obj.png
+[57/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket129/TCLC_Jacket129_obj.usd
+[Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:15 [234,252ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:19 [238,545ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:24 [242,834ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:28 [247,308ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:32 [251,684ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:37 [256,035ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:41 [260,384ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:45 [264,659ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:50 [269,140ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:54 [273,771ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:41:59 [278,253ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:04 [282,865ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:08 [287,418ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:13 [292,000ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:17 [296,461ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:22 [301,008ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:26 [305,574ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:31 [310,205ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:35 [314,670ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cgarment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/057_TCLC_Jacket129_obj.png
+[58/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top577/TCLC_Top577_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/058_TCLC_Top577_obj.png
+[59/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top530/TCLC_Top530_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/059_TCLC_Top530_obj.png
+[60/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top117/TCLC_top117_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/060_TCLC_top117_obj.png
+[61/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top584/TCLC_Top584_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/061_TCLC_Top584_obj.png
+[62/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Normal_Model_023/TCLC_Normal_Model_023_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/062_TCLC_Normal_Model_023_obj.png
+[63/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_018/TCLC_018_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/063_TCLC_018_obj.png
+[64/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top085/TCLC_Top085_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/064_TCLC_Top085_obj.png
+[65/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top476/TCLC_Top476_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/065_TCLC_Top476_obj.png
+[66/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_015/TCLC_015_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/066_TCLC_015_obj.png
+[67/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_model2_024/TCLC_model2_024_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/067_TCLC_model2_024_obj.png
+[68/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_top118/TCLC_top118_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/068_TCLC_top118_obj.png
+[69/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top612/TCLC_Top612_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/069_TCLC_Top612_obj.png
+[70/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top652/TCLC_Top652_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/070_TCLC_Top652_obj.png
+[71/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Top477/TCLC_Top477_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/071_TCLC_Top477_obj.png
+[72/150] Preview garment: Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_Jacket019/TCLC_Jacket019_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/072_TCLC_Jacket019_obj.png
+[73/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top526/TNLC_Top526_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/073_TNLC_Top526_obj.png
+[74/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top581/TNLC_Top581_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/074_TNLC_Top581_obj.png
+[75/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_003/TNLC_model2_003_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/075_TNLC_model2_003_obj.png
+[76/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top470/TNLC_Top470_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/076_TNLC_Top470_obj.png
+[77/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket038/TNLC_Jacket038_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/077_TNLC_Jacket038_obj.png
+[78/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top219/TNLC_Top219_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/078_TNLC_Top219_obj.png
+[79/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_042/TNLC_042_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/079_TNLC_042_obj.png
+[80/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_004/TNLC_Normal_Model_004_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/080_TNLC_Normal_Model_004_obj.png
+[81/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top419/TNLC_Top419_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/081_TNLC_Top419_obj.png
+[82/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_098/TNLC_098_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/082_TNLC_098_obj.png
+[83/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_084/TNLC_084_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/083_TNLC_084_obj.png
+[84/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_002/TNLC_model2_002_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/084_TNLC_model2_002_obj.png
+[85/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top250/TNLC_Top250_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/085_TNLC_Top250_obj.png
+[86/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top273/TNLC_Top273_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/086_TNLC_Top273_obj.png
+[87/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_047/TNLC_model2_047_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/087_TNLC_model2_047_obj.png
+[88/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_007/TNLC_model2_007_obj.usd
+garment
+/World/Garment/garment
+loth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:40 [319,187ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:44 [323,699ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:49 [328,302ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:54 [332,928ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:42:58 [337,448ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:03 [342,091ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:07 [346,523ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:12 [351,067ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:17 [356,296ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:22 [360,808ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:26 [365,404ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:31 [369,821ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:35 [374,170ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:39 [378,602ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:44 [382,921ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:48 [387,363ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:52 [391,718ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:43:57 [396,141ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:01 [400,524ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:06 [404,889ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:10 [409,329ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:15 [413,877ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:19 [418,389ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:24 [422,811ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:28 [427,424ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:33 [431,956ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:37 [436,269ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:41 [440,660ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:46 [445,022ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:50 [449,409ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:55 [454,020ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:44:59 [458,371ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:03 [462,766ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:08 [467,115ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:12 [471,457ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:17 [475,835ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:21 [480,237ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:25 [484,636ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:30 [489,119ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] PlSaved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/088_TNLC_model2_007_obj.png
+[89/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_048/TNLC_Normal_Model_048_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/089_TNLC_Normal_Model_048_obj.png
+[90/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_top517/TNLC_top517_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/090_TNLC_top517_obj.png
+[91/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_062/TNLC_062_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/091_TNLC_062_obj.png
+[92/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top525/TNLC_Top525_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/092_TNLC_Top525_obj.png
+[93/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket007_1/TNLC_Jacket007_1_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/093_TNLC_Jacket007_1_obj.png
+[94/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket002/TNLC_Jacket002_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/094_TNLC_Jacket002_obj.png
+[95/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_041/TNLC_Normal_Model_041_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/095_TNLC_Normal_Model_041_obj.png
+[96/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_066/TNLC_model2_066_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/096_TNLC_model2_066_obj.png
+[97/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_027/TNLC_model2_027_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/097_TNLC_model2_027_obj.png
+[98/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_033/TNLC_033_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/098_TNLC_033_obj.png
+[99/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top504/TNLC_Top504_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/099_TNLC_Top504_obj.png
+[100/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top516/TNLC_Top516_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/100_TNLC_Top516_obj.png
+[101/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_022/TNLC_Normal_Model_022_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/101_TNLC_Normal_Model_022_obj.png
+[102/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_056/TNLC_model2_056_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/102_TNLC_model2_056_obj.png
+[103/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top532/TNLC_Top532_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/103_TNLC_Top532_obj.png
+[104/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top313/TNLC_Top313_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/104_TNLC_Top313_obj.png
+[105/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_049/TNLC_Normal_Model_049_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/105_TNLC_Normal_Model_049_obj.png
+[106/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top412/TNLC_Top412_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/106_TNLC_Top412_obj.png
+[107/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket025/TNLC_Jacket025_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/107_TNLC_Jacket025_obj.png
+[108/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top074/TNLC_Top074_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/108_TNLC_Top074_obj.png
+[109/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top580/TNLC_Top580_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/109_TNLC_Top580_obj.png
+[110/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket001_0/TNLC_Jacket001_0_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/110_TNLC_Jacket001_0_obj.png
+[111/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top314/TNLC_Top314_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/111_TNLC_Top314_obj.png
+[112/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket090/TNLC_Jacket090_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/112_TNLC_Jacket090_obj.png
+[113/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top508/TNLC_Top508_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/113_TNLC_Top508_obj.png
+[114/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_036/TNLC_036_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/114_TNLC_036_obj.png
+[115/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_075/TNLC_model2_075_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/115_TNLC_model2_075_obj.png
+[116/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top307/TNLC_Top307_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/116_TNLC_Top307_obj.png
+[117/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top197/TNLC_Top197_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/117_TNLC_Top197_obj.png
+[118/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_top363/TNLC_top363_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/118_TNLC_top363_obj.png
+ease note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:34 [493,479ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:39 [497,976ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:43 [502,357ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:47 [506,756ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:52 [511,220ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:45:56 [515,726ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:01 [520,141ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:05 [524,528ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:10 [529,036ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:14 [533,707ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:19 [538,204ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:23 [542,675ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:28 [547,040ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:32 [551,442ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:37 [556,152ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:41 [560,747ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:46 [565,267ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:50 [569,629ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:55 [574,037ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:46:59 [578,412ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:04 [582,797ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:08 [587,163ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:12 [591,639ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:17 [596,107ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:22 [600,826ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:26 [605,508ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:31 [610,142ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:35 [614,664ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:40 [619,055ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:44 [623,429ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:49 [627,800ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:53 [632,182ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:47:57 [636,561ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:02 [641,067ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:06 [645,553ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:11 [650,430ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:16 [655,218ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:21 [659,885ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:25 [664,561ms] [Warning] [is[119/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket088/TNLC_Jacket088_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/119_TNLC_Jacket088_obj.png
+[120/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Sweater001/TNLC_Sweater001_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/120_TNLC_Sweater001_obj.png
+[121/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_032/TNLC_Normal_Model_032_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/121_TNLC_Normal_Model_032_obj.png
+[122/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Sweater012/TNLC_Sweater012_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/122_TNLC_Sweater012_obj.png
+[123/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jumper002/TNLC_Jumper002_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/123_TNLC_Jumper002_obj.png
+[124/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_034/TNLC_Normal_Model_034_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/124_TNLC_Normal_Model_034_obj.png
+[125/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top158/TNLC_Top158_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/125_TNLC_Top158_obj.png
+[126/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_099/TNLC_099_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/126_TNLC_099_obj.png
+[127/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_008/TNLC_model2_008_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/127_TNLC_model2_008_obj.png
+[128/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket010/TNLC_Jacket010_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/128_TNLC_Jacket010_obj.png
+[129/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket075/TNLC_Jacket075_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/129_TNLC_Jacket075_obj.png
+[130/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top198/TNLC_Top198_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/130_TNLC_Top198_obj.png
+[131/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_018/TNLC_model2_018_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/131_TNLC_model2_018_obj.png
+[132/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_041/TNLC_041_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/132_TNLC_041_obj.png
+[133/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top315/TNLC_Top315_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/133_TNLC_Top315_obj.png
+[134/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_019/TNLC_model2_019_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/134_TNLC_model2_019_obj.png
+[135/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top537/TNLC_Top537_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/135_TNLC_Top537_obj.png
+[136/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top200/TNLC_Top200_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/136_TNLC_Top200_obj.png
+[137/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top603/TNLC_Top603_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/137_TNLC_Top603_obj.png
+[138/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top176/TNLC_Top176_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/138_TNLC_Top176_obj.png
+[139/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top039/TNLC_Top039_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/139_TNLC_Top039_obj.png
+[140/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_top13/TNLC_top13_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/140_TNLC_top13_obj.png
+[141/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top400/TNLC_Top400_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/141_TNLC_Top400_obj.png
+[142/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_072/TNLC_072_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/142_TNLC_072_obj.png
+[143/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_028/TNLC_model2_028_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/143_TNLC_model2_028_obj.png
+[144/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Top057/TNLC_Top057_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/144_TNLC_Top057_obj.png
+[145/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_010/TNLC_010_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/145_TNLC_010_obj.png
+[146/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket021/TNLC_Jacket021_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/146_TNLC_Jacket021_obj.png
+[147/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_model2_065/TNLC_model2_065_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/147_TNLC_model2_065_obj.png
+[148/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Jacket005_0/TNLC_Jacket005_0_obj.usd
+garment
+/World/Garment/garment
+Saved preview image: /home/admin01/Projects/DexGarmentLab/Preprocess/data/tops_preview_once/images/148_TNLC_Jacket005_0_obj.png
+[149/150] Preview garment: Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Normal_Model_036/TNLC_Normal_Model_036_obj.usd
+garment
+/World/Garment/garment
+aacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:30 [668,939ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:34 [673,441ms] [Warning] [isaacsim.core.prims.impl.cloth_prim] Please note that support for particle cloth and related APIs is now deprecated. These features will be removed in future releases.
+2025-12-23 03:48:40 [679,017ms] [Warning] [carb] Plugin interface for a client: omni.hydratexture.plugin was already released.
+[679.099s] Simulation App Shutting Down

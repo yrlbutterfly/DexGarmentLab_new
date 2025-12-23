@@ -112,7 +112,7 @@ print_progress() {
 while [ "$current_num" -lt "$validation_num" ]; do
     print_progress "$current_num" "$validation_num" "$task_name"
 
-    $ISAAC_PATH Env_Validation/Fold_Tops_HALO_dp.py \
+    $ISAAC_PATH Env_Validation/Fold_Tops_HALO_mp.py \
         --env_random_flag True \
         --garment_random_flag True \
         --record_video_flag True \
@@ -123,7 +123,7 @@ while [ "$current_num" -lt "$validation_num" ]; do
         --stage_3_checkpoint_num 0 \
         --debug True \
         --debug_dir "${base_dir}/debug" \
-        --vlm_model_name "/share_data/yanruilin/qwen3vl_full_sft_cloth_sim"
+        --vlm_model_name "/share_data/yanruilin/qwen3vl_full_sft_cloth_4"
 
     current_num=$(ls "${base_dir}/final_state_pic" | wc -l)
     sleep 5

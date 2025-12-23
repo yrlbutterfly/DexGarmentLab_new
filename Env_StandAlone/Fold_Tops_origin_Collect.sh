@@ -21,7 +21,7 @@ export ISAAC_PATH
 ASSETS_FILE="Model_HALO/GAM/checkpoints/Tops_LongSleeve/assets_list.txt"
 
 # 每件衣服重复次数
-REPEAT_PER_GARMENT=3
+REPEAT_PER_GARMENT=1
 
 # 可选地面材质 usd 路径
 GROUND_MATERIAL_USD="$1"
